@@ -1,0 +1,11 @@
+{
+  "mysql_login": "username",
+  "mysql_password": "password",
+  "mysql_database": "database",
+  "mysql_host": "localhost",
+  "mysql_port": 3306,
+  "command_name": "!steam",
+  "permitted_role_name": "VIP",
+  "server_id": "INSERT_SERVER_ID_HERE",
+  "discord_token": "INSERT_DISCORD_TOKEN_HERE"
+}
