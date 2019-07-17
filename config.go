@@ -15,6 +15,7 @@ type Configuration struct {
 	MysqlPort         int    `json:"mysql_port"`
 	CommandName       string `json:"command_name"`
 	DiscordToken      string `json:"discord_token"`
+	SteamApiToken     string `json:"steam_api_token"`
 	PermittedRoleName string `json:"permitted_role_name"`
 	ServerId          string `json:"server_id"`
 }

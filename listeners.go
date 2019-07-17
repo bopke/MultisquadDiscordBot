@@ -56,7 +56,7 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 					_, _ = s.ChannelMessageSend(message.ChannelID, Locale.SteamIdInserted)
 				}
 				return
-			} else {
+			} else if err != NoSuchProfileError {
 				_, _ = s.ChannelMessageSend(message.ChannelID, Locale.UnexpectedError)
 				return
 			}

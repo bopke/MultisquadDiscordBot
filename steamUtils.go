@@ -15,11 +15,11 @@ var NoSuchProfileError = errors.New("no such profile")
 
 // funkcja wyciągająca za pomocą specjalnego api steamId na podstawie id konta użytkownika. Zwraca również potencjalny błąd.
 func validateSteamId(steamId string) error {
-	// pierwsze zapytanie robimy do loga tego api, ponieważ tego wymagają w swoich zasadach korzystania z API.
-	log.Println("Zapisuję do logu SID " + steamId)
-	url := fmt.Sprintf("https://steamid.co/php/log.php?link=%s", steamId)
+	log.Println("Sprawdzam zgodność SID " + steamId)
+	url := fmt.Sprintf("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002?key=%s&steamids=%s", Config.SteamApiToken, steamId)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
+		log.Println("getSteamIdForProfileId http.NewRequest(\"GET\", url, nil) " + err.Error())
 		return err
 	}
 	resp, err := http.DefaultClient.Do(req)
@@ -27,32 +27,24 @@ func validateSteamId(steamId string) error {
 		log.Println("getSteamIdForProfileId http.DefaultClient.Do(req) " + err.Error())
 		return err
 	}
-	resp.Body.Close()
-	// Drugie zapytanie jest już dokładnie do pozyskania steamId
-	log.Println("Sprawdzam zgodność SID " + steamId)
-	url = fmt.Sprintf("https://steamid.co/php/api.php?action=steamID64&id=%s", steamId)
-	req, err = http.NewRequest("GET", url, nil)
-	if err != nil {
-		return err
-	}
-	resp, err = http.DefaultClient.Do(req)
-	if err != nil {
-		log.Println("getSteamIdForProfileId http.DefaultClient.Do(req2) " + err.Error())
-		return err
-	}
 	defer resp.Body.Close()
 	// struktura wewnętrzna, w JSONie który dostaniemy z api może być pole error, lub pole steamId64 (między innymi). Tylko one nas interesują.
+	type players struct {
+		SteamId string `json:"steamid"`
+	}
+	type response struct {
+		Players []players `json:"players"`
+	}
 	var data struct {
-		SteamID64 string `json:"steamID64"`
-		Error     string `json:"error"`
+		Response response `json:"response"`
 	}
 	err = json.NewDecoder(resp.Body).Decode(&data)
 	if err != nil {
+		log.Println("getSteamIdForProfileId json.Decode " + err.Error())
 		return err
 	}
-	// Jeżeli error został ustawiony to znaczy że takiego profilu nie ma, upraszczając.
-	if data.Error != "" {
-		log.Println("Stwierdzam niezgodność SID " + steamId)
+	if len(data.Response.Players) == 0 {
+		log.Println("Stwierdzam niezzgodność SID " + steamId)
 		return NoSuchProfileError
 	}
 	log.Println("Stwierdzam zgodność SID " + steamId)
@@ -61,9 +53,8 @@ func validateSteamId(steamId string) error {
 
 // funkcja wyciągająca za pomocą specjalnego api steamId na podstawie id konta użytkownika. Zwraca również potencjalny błąd.
 func getSteamIdForProfileId(profileId string) (string, error) {
-	// pierwsze zapytanie robimy do loga tego api, ponieważ tego wymagają w swoich zasadach korzystania z API.
-	log.Println("Zapisuję do logu SID " + profileId)
-	url := fmt.Sprintf("https://steamid.co/php/log.php?link=%s", profileId)
+	log.Println("Sprawdzam zgodność " + profileId)
+	url := fmt.Sprintf("http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001?key=%s&vanityurl=%s", Config.SteamApiToken, profileId)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return "", err
@@ -73,36 +64,24 @@ func getSteamIdForProfileId(profileId string) (string, error) {
 		log.Println("getSteamIdForProfileId http.DefaultClient.Do(req) " + err.Error())
 		return "", err
 	}
-	resp.Body.Close()
-	// Drugie zapytanie jest już dokładnie do pozyskania steamId
-	log.Println("Sprawdzam zgodność " + profileId)
-	url = fmt.Sprintf("https://steamid.co/php/api.php?action=steamID&id=%s", profileId)
-	req, err = http.NewRequest("GET", url, nil)
-	if err != nil {
-		return "", err
-	}
-	resp, err = http.DefaultClient.Do(req)
-	if err != nil {
-		log.Println("getSteamIdForProfileId http.DefaultClient.Do(req2) " + err.Error())
-		return "", err
-	}
 	defer resp.Body.Close()
-	// struktura wewnętrzna, w JSONie który dostaniemy z api może być pole error, lub pole steamId64 (między innymi). Tylko one nas interesują.
+	// struktura wewnętrzna JSONa
+	type response struct {
+		SteamId string `json:"steamid"`
+	}
 	var data struct {
-		SteamID64 string `json:"steamID64"`
-		Error     string `json:"error"`
+		Response response `json:"response"`
 	}
 	err = json.NewDecoder(resp.Body).Decode(&data)
 	if err != nil {
 		return "", err
 	}
-	// Jeżeli error został ustawiony to znaczy że takiego profilu nie ma, upraszczając.
-	if data.Error != "" {
+	if data.Response.SteamId == "" {
 		log.Println("Stwierdzam niezgodność " + profileId)
 		return "", NoSuchProfileError
 	}
 	log.Println("Stwierdzam zgodność " + profileId)
-	return data.SteamID64, nil
+	return data.Response.SteamId, nil
 }
 
 //funkcja powiązuje id użytkownika discorda z steamid w bazie danych
