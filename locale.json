@@ -5,5 +5,5 @@
   "database_error": "Błąd połączenia z bazą danych. Spróbuj ponownie później, a najlepiej zgłoś problem w dziale propozycje",
   "unexpected_error": "Wystąpił nieoczekiwany błąd połączenia z API. Spróbuj później.",
   "steamid_updated": "Zaktualizowałem Twoje SteamID. VIP na serwerach CS:GO będzie obowiązywał po zmianie mapy! :wink: ",
-  "steamid_insterted": "Twoje konto steam zostało dodane poprawnie. VIP na serwerach CS:GO będzie obowiązywał po zmianie mapy! ;)"
+  "steamid_inserted": "Twoje konto steam zostało dodane poprawnie. VIP na serwerach CS:GO będzie obowiązywał po zmianie mapy! ;)"
 }
