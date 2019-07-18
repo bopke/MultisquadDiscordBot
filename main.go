@@ -91,6 +91,7 @@ func checkUsers() {
 			}
 		} else {
 			// jeżeli jednak był
+
 			if linkedUser.Valid == false {
 				_, _ = DbMap.Exec("UPDATE LinkedUsers SET valid=true WHERE discord_id=?", linkedUser.DiscordID)
 			}

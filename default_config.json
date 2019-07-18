@@ -4,8 +4,11 @@
   "mysql_database": "database",
   "mysql_host": "localhost",
   "mysql_port": 3306,
-  "command_name": "!steam",
+  "steam_command_name": "!steam",
+  "status_command_name": "!status",
+  "minecraft_command_name": "!minecraft",
   "permitted_role_name": "VIP",
   "server_id": "INSERT_SERVER_ID_HERE",
-  "discord_token": "INSERT_DISCORD_TOKEN_HERE"
+  "discord_token": "INSERT_DISCORD_TOKEN_HERE",
+  "steam_api_token": "STEAM_API_TOKEN_HERE"
 }

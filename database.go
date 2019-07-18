@@ -11,11 +11,12 @@ import (
 
 // struktura tabeli w bazie danych
 type LinkedUsers struct {
-	Id             int       `db:"id,primarykey,autoincrement"`
-	DiscordID      string    `db:"discord_id,size:255"`
-	SteamID64      string    `db:"steam_id,size:255"`
-	Valid          bool      `db:"valid"`
-	ExpirationDate time.Time `db:"expiration_date"`
+	Id                int            `db:"id,primarykey,autoincrement"`
+	DiscordID         string         `db:"discord_id,size:255"`
+	SteamID64         sql.NullString `db:"steam_id,size:255"`
+	Valid             bool           `db:"valid"`
+	ExpirationDate    time.Time      `db:"expiration_date"`
+	MinecraftNickname sql.NullString `db:"minecraft_nickname,size:255"`
 }
 
 var DbMap gorp.DbMap
