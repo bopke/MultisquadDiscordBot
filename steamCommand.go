@@ -16,18 +16,18 @@ import (
 var NoSuchProfileError = errors.New("no such profile")
 
 // funkcja wyciągająca za pomocą specjalnego api steamId na podstawie id konta użytkownika. Zwraca również potencjalny błąd.
-func validateSteamId(steamId string) error {
+func validateSteamId(steamId string) (string, error) {
 	log.Println("Sprawdzam zgodność SID " + steamId)
 	url := fmt.Sprintf("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002?key=%s&steamids=%s", Config.SteamApiToken, steamId)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Println("getSteamIdForProfileId http.NewRequest(\"GET\", url, nil) " + err.Error())
-		return err
+		return "", err
 	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Println("getSteamIdForProfileId http.DefaultClient.Do(req) " + err.Error())
-		return err
+		return "", err
 	}
 	defer resp.Body.Close()
 	// struktura wewnętrzna, w JSONie który dostaniemy z api może być pole error, lub pole steamId64 (między innymi). Tylko one nas interesują.
@@ -43,14 +43,14 @@ func validateSteamId(steamId string) error {
 	err = json.NewDecoder(resp.Body).Decode(&data)
 	if err != nil {
 		log.Println("getSteamIdForProfileId json.Decode " + err.Error())
-		return err
+		return "", err
 	}
 	if len(data.Response.Players) == 0 {
 		log.Println("Stwierdzam niezzgodność SID " + steamId)
-		return NoSuchProfileError
+		return "", NoSuchProfileError
 	}
 	log.Println("Stwierdzam zgodność SID " + steamId)
-	return nil
+	return data.Response.Players[0].SteamId, nil
 }
 
 // funkcja wyciągająca za pomocą specjalnego api steamId na podstawie id konta użytkownika. Zwraca również potencjalny błąd.
@@ -152,7 +152,7 @@ func handleSteamCommand(s *discordgo.Session, message *discordgo.MessageCreate) 
 		if strings.HasPrefix(args[1], "steamcommunity.com/profiles/") {
 			// interesuje nas tylko to, co jest po /profiles/
 			args[1] = args[1][28:]
-			err := validateSteamId(args[1])
+			args[1], err = validateSteamId(args[1])
 			if err == nil {
 				state := linkUserSteamID(message.Author.ID, args[1])
 				if state == ERROR {
