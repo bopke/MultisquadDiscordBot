@@ -7,8 +7,12 @@
   "steam_command_name": "!steam",
   "status_command_name": "!status",
   "minecraft_command_name": "!minecraft",
+  "vip_command_name": "!vip",
+  "default_vip_length": 31,
   "permitted_role_name": "VIP",
+  "admin_role_name": "potega",
   "server_id": "INSERT_SERVER_ID_HERE",
   "discord_token": "INSERT_DISCORD_TOKEN_HERE",
-  "steam_api_token": "STEAM_API_TOKEN_HERE"
+  "steam_api_token": "STEAM_API_TOKEN_HERE",
+  "announcement_channel_id": ""
 }

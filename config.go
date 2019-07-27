@@ -8,18 +8,22 @@ import (
 
 // struktura konfiguracji
 type Configuration struct {
-	MysqlLogin           string `json:"mysql_login"`
-	MysqlPassword        string `json:"mysql_password"`
-	MysqlDatabase        string `json:"mysql_database"`
-	MysqlHost            string `json:"mysql_host"`
-	MysqlPort            int    `json:"mysql_port"`
-	SteamCommandName     string `json:"steam_command_name"`
-	StatusCommandName    string `json:"status_command_name"`
-	MinecraftCommandName string `json:"minecraft_command_name"`
-	DiscordToken         string `json:"discord_token"`
-	SteamApiToken        string `json:"steam_api_token"`
-	PermittedRoleName    string `json:"permitted_role_name"`
-	ServerId             string `json:"server_id"`
+	MysqlLogin            string `json:"mysql_login"`
+	MysqlPassword         string `json:"mysql_password"`
+	MysqlDatabase         string `json:"mysql_database"`
+	MysqlHost             string `json:"mysql_host"`
+	MysqlPort             int    `json:"mysql_port"`
+	SteamCommandName      string `json:"steam_command_name"`
+	StatusCommandName     string `json:"status_command_name"`
+	MinecraftCommandName  string `json:"minecraft_command_name"`
+	VipCommandName        string `json:"vip_command_name"`
+	VipDefaultLength      int    `json:"default_vip_length"`
+	DiscordToken          string `json:"discord_token"`
+	SteamApiToken         string `json:"steam_api_token"`
+	PermittedRoleName     string `json:"permitted_role_name"`
+	AdminRoleName         string `json:"admin_role_name"`
+	ServerId              string `json:"server_id"`
+	AnnouncementChannelId string `json:"announcement_channel_id"`
 }
 
 // zmienna globalna która będzie przechowywać konfigurację

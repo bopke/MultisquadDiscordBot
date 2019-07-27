@@ -9,6 +9,7 @@ import (
 //struktura z tekstami
 type Locales struct {
 	NoPermission               string `json:"no_permission"`
+	NoAdminPermission          string `json:"no_admin_permission"`
 	SteamInvalidProfileLink    string `json:"steam_invalid_profile_link"`
 	SteamInvalidProfileId      string `json:"steam_invalid_profile_id"`
 	SteamInstruction           string `json:"steam_instruction"`
@@ -23,6 +24,12 @@ type Locales struct {
 	StatusNoVip                string `json:"status_no_vip"`
 	StatusExpired              string `json:"status_expired"`
 	StatusValid                string `json:"status_valid"`
+	VipIncorrectDaysCount      string `json:"vip_incorrect_days_count"`
+	VipIncorrectUser           string `json:"vip_incorrect_user"`
+	VipInserted                string `json:"vip_inserted"`
+	VipUpdated                 string `json:"vip_updated"`
+	VipAnnouncementInserted    string `json:"vip_announcement_inserted"`
+	VipAnnouncementUpdated     string `json:"vip_announcement_updated"`
 }
 
 var Locale = new(Locales)

@@ -1,5 +1,6 @@
 {
   "no_permission": "Ta funkcjonalność jest tylko dla VIP'ów. Nic straconego, wejdź na <#581283039515246598> i dołącz do naszego squadu ;)",
+  "no_admin_permission": "Tylko dla admina!",
   "steam_invalid_profile_link": "Wprowadzony został błędny link do profilu steam. Spróbuj ponownie, na pewno się uda!",
   "steam_invalid_profile_id": "Niestety, nie mogę znaleźć tego profilu. Sprawdź, czy link jest poprawny i spróbuj jeszcze raz.",
   "steam_instruction": "Przy użyciu tej komendy możesz podać mi link do swojego profilu steam, aby uzyskać dostęp do rangi VIP na serwerze CSGO!",
@@ -13,5 +14,11 @@
   "minecraft_instruction": "Przy użyciu tej komendy możesz podać mi swój nick w minecraft (uważaj na wielkość liter!), aby uzyskać dostęp do serwera tylko dla VIPów!",
   "status_no_vip": "Nie miałeś nigdy vipa :(",
   "status_expired": "Twój vip juz stracił ważność :(",
-  "status_valid": "Twój vip jest ważny do {DAY}.{MONTH}.{YEAR} {HOUR}:{MINUTES}"
+  "status_valid": "Twój vip jest ważny do {DAY}.{MONTH}.{YEAR} {HOUR}:{MINUTES}",
+  "vip_incorrect_days_count": "To nie wygląda na prawidłową ilość dni :worried:",
+  "vip_incorrect_user": "Kogo awansujemy?",
+  "vip_inserted": "Status vip użytkownika został dodany",
+  "vip_updated": "Status vip użytkownika został przedłużony",
+  "vip_announcement_inserted": "Użytkownik {MENTION} kupił vipa!",
+  "vip_announcement_updated": "Użytkownik {MENTION} przedłużył vipa!"
 }
