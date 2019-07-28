@@ -47,6 +47,7 @@ func handleVipCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 		linkedUser.DiscordID = message.Mentions[0].ID
 		linkedUser.Valid = true
 		linkedUser.ExpirationDate = time.Now().Add((time.Hour * 24) * time.Duration(length))
+		linkedUser.NotifiedExpiration = false
 		err = DbMap.Insert(&linkedUser)
 		if err != nil {
 			log.Println("Błąd połączenia z bazą danych!\n" + err.Error())
@@ -76,6 +77,7 @@ func handleVipCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 	} else {
 		linkedUser.ExpirationDate = linkedUser.ExpirationDate.Add((time.Hour * 24) * time.Duration(length))
 	}
+	linkedUser.NotifiedExpiration = false
 	_, err = DbMap.Update(&linkedUser)
 	if err != nil {
 		log.Println("Błąd połączenia z bazą danych!\n" + err.Error())

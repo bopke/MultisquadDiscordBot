@@ -20,5 +20,7 @@
   "vip_inserted": "Status vip użytkownika został dodany",
   "vip_updated": "Status vip użytkownika został przedłużony",
   "vip_announcement_inserted": "Użytkownik {MENTION} kupił vipa!",
-  "vip_announcement_updated": "Użytkownik {MENTION} przedłużył vipa!"
+  "vip_announcement_updated": "Użytkownik {MENTION} przedłużył vipa!",
+  "vip_near_expiration_notification": "Hej, {MENTION}, już za 3 dni wygasa Twój vip! :worried:",
+  "vip_expired_notification": "Vip użytkownika {MENTION} wygasł."
 }

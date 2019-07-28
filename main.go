@@ -6,7 +6,9 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
+	"time"
 )
 
 // sesja połączenia z botem musi być globalna, żeby cykliczne zadanie sprawdzania użytkowników mogło działać
@@ -62,8 +64,8 @@ func checkUsers() {
 	}
 	//zbieramy wszystkie zapisane ID z discorda
 	var linkedUsers []LinkedUsers
-	_, err = DbMap.Select(&linkedUsers, "SELECT discord_id,valid FROM LinkedUsers")
-	var stay bool
+	_, err = DbMap.Select(&linkedUsers, "SELECT id,discord_id,valid,expiration_date,notified_expiration FROM LinkedUsers WHERE valid=true")
+	var hasRole bool
 	for _, linkedUser := range linkedUsers {
 		member, err := session.GuildMember(Config.ServerId, linkedUser.DiscordID)
 		// jeżeli użytkownika nie ma już na serwerze - odcinamy go.
@@ -77,23 +79,43 @@ func checkUsers() {
 			log.Println("Błąd przy pobieraniu użytkownika!\n" + err.Error())
 			continue
 		}
-		stay = false
+		hasRole = false
 		for _, role := range member.Roles {
 			if role == roleId {
-				stay = true
+				hasRole = true
 				break
 			}
 		}
-		//jeżeli użytkownik jest na serwerze, ale nie ma już tej rangi - odcinamy go.
-		if stay == false {
-			if linkedUser.Valid == true {
+		if linkedUser.ExpirationDate.Before(time.Now()) {
+			if hasRole {
+				err = session.GuildMemberRoleRemove(Config.ServerId, linkedUser.DiscordID, roleId)
+				if err != nil {
+					log.Println("Błąd usuwania rangi użytkownika " + err.Error())
+					continue
+				}
+				_, _ = session.ChannelMessageSend(Config.AnnouncementChannelId, strings.Replace(Locale.VipExpiredNotification, "{MENTION}", member.Mention(), -1))
 				_, _ = DbMap.Exec("UPDATE LinkedUsers SET valid=false WHERE discord_id=?", linkedUser.DiscordID)
+				continue
 			}
-		} else {
-			// jeżeli jednak był
-
-			if linkedUser.Valid == false {
-				_, _ = DbMap.Exec("UPDATE LinkedUsers SET valid=true WHERE discord_id=?", linkedUser.DiscordID)
+		} else if linkedUser.ExpirationDate.Before(time.Now().Add(3 * time.Hour * 24)) {
+			if !hasRole {
+				err = session.GuildMemberRoleAdd(Config.ServerId, linkedUser.DiscordID, roleId)
+				if err != nil {
+					log.Println("Błąd dodawania rangi użytkownika " + err.Error())
+					continue
+				}
+			}
+			if !linkedUser.NotifiedExpiration {
+				linkedUser.NotifiedExpiration = true
+				_, _ = DbMap.Update(&linkedUser)
+				_, _ = session.ChannelMessageSend(Config.AnnouncementChannelId, strings.Replace(Locale.VipNearExpirationNotification, "{MENTION}", member.Mention(), -1))
+			}
+		}
+		if !hasRole {
+			err = session.GuildMemberRoleAdd(Config.ServerId, linkedUser.DiscordID, roleId)
+			if err != nil {
+				log.Println("Błąd dodawania rangi użytkownika " + err.Error())
+				continue
 			}
 		}
 	}
