@@ -10,6 +10,7 @@ import (
 )
 
 func handleVipCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
+	_ = s.ChannelMessageDelete(message.ChannelID, message.ID)
 	member, err := s.GuildMember(message.GuildID, message.Author.ID)
 	if err != nil {
 		log.Println("Błąd pobierania twórcy wiadomości!\n" + err.Error())
