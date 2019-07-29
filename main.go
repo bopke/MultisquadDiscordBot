@@ -119,4 +119,42 @@ func checkUsers() {
 			}
 		}
 	}
+
+	members, err := session.GuildMembers(Config.ServerId, "0", 1000)
+	if err != nil {
+		log.Println("Błąd pobierania użytkowników serwera " + err.Error())
+		return
+	}
+	for {
+		for _, member := range members {
+			hasRole = false
+			for _, role := range member.Roles {
+				if role == roleId {
+					hasRole = true
+					break
+				}
+			}
+			if hasRole != true {
+				continue
+			}
+			for _, linkedUser := range linkedUsers {
+				if linkedUser.DiscordID == member.User.ID {
+					hasRole = false
+					break
+				}
+			}
+			if hasRole {
+				_ = session.GuildMemberRoleRemove(Config.ServerId, member.User.ID, roleId)
+			}
+		}
+		log.Println("co")
+		if len(members) == 1000 {
+			log.Println("co")
+			members, err = session.GuildMembers(Config.ServerId, members[999].User.ID, 1000)
+			if err != nil {
+				log.Println("Błąd pobierania użytkowników serwera " + err.Error())
+				return
+			}
+		}
+	}
 }
