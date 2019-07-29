@@ -1,6 +1,7 @@
 {
   "no_permission": "Ta funkcjonalność jest tylko dla VIP'ów. Nic straconego, wejdź na <#581283039515246598> i dołącz do naszego squadu ;)",
   "no_admin_permission": "Komenda tylko dla admina!",
+  "rate_limit_wait": "<:nie:586340289497661459> Mordo zwolnij trochę! Odczekaj {SECONDS} sekund i spróbuj ponownie!",
   "steam_invalid_profile_link": "Wprowadzony został błędny link do profilu steam. Spróbuj ponownie, na pewno się uda!",
   "steam_invalid_profile_id": "Niestety, nie mogę znaleźć tego profilu. Sprawdź, czy link jest poprawny i spróbuj jeszcze raz.",
   "steam_instruction": "Przy użyciu tej komendy możesz podać mi link do swojego profilu steam, aby uzyskać dostęp do rangi VIP na serwerze CSGO!",

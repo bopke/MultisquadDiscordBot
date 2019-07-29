@@ -10,6 +10,7 @@ import (
 type Locales struct {
 	NoPermission                  string `json:"no_permission"`
 	NoAdminPermission             string `json:"no_admin_permission"`
+	RateLimitWait                 string `json:"rate_limit_wait"`
 	SteamInvalidProfileLink       string `json:"steam_invalid_profile_link"`
 	SteamInvalidProfileId         string `json:"steam_invalid_profile_id"`
 	SteamInstruction              string `json:"steam_instruction"`

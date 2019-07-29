@@ -28,6 +28,7 @@ func main() {
 	Config.load()
 	Locale.load()
 	InitDB()
+	InitRateLimits()
 	var err error
 	session, err = discordgo.New("Bot " + Config.DiscordToken)
 	if err != nil {
