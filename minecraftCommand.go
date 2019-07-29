@@ -5,6 +5,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"log"
 	"strings"
+	"time"
 )
 
 func handleMinecraftCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
@@ -14,7 +15,11 @@ func handleMinecraftCommand(s *discordgo.Session, message *discordgo.MessageCrea
 		return
 	}
 	if !hasRole(member, Config.PermittedRoleName, message.GuildID) {
-		_, _ = s.ChannelMessageSend(message.ChannelID, Locale.NoPermission)
+		msg, err := s.ChannelMessageSend(message.ChannelID, Locale.NoPermission)
+		if err == nil {
+			time.Sleep(20 * time.Second)
+			_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+		}
 		return
 	}
 	// dzielimy wiadomość po spacjach dla wygody
@@ -26,7 +31,11 @@ func handleMinecraftCommand(s *discordgo.Session, message *discordgo.MessageCrea
 	log.Println("Sprawdzam poprawność nicku " + args[1])
 	if !validateMinecraftNickname(args[1]) {
 		log.Println("Stwierdzam niepoprawność nicku " + args[1])
-		_, _ = s.ChannelMessageSend(message.ChannelID, Locale.MinecraftIncorrectNickname)
+		msg, err := s.ChannelMessageSend(message.ChannelID, Locale.MinecraftIncorrectNickname)
+		if err == nil {
+			time.Sleep(20 * time.Second)
+			_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+		}
 		return
 	}
 	log.Println("Stwierdzam poprawność nicku " + args[1])
@@ -64,8 +73,6 @@ func linkUserMinecraftNickname(discordID, minecraftNickname string) State {
 	//a jeżeli takowy wpis jest
 	linkedUser.MinecraftNickname.String = minecraftNickname
 	linkedUser.MinecraftNickname.Valid = true
-	// dla pewności
-	linkedUser.Valid = true
 	_, err = DbMap.Update(&linkedUser)
 	if err != nil {
 		log.Println("Błąd połączenia z bazą danych!\n" + err.Error())

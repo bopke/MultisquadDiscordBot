@@ -17,21 +17,33 @@ func handleVipCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 		return
 	}
 	if !hasPermission(member, message.GuildID, discordgo.PermissionAdministrator) {
-		_, _ = s.ChannelMessageSend(message.ChannelID, Locale.NoAdminPermission)
+		msg, err := s.ChannelMessageSend(message.ChannelID, Locale.NoAdminPermission)
+		if err == nil {
+			time.Sleep(20 * time.Second)
+			_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+		}
 		return
 	}
 	// dzielimy wiadomość po spacjach dla wygody
 	args := strings.Split(message.Content, " ")
 	var length int
 	if message.Mentions != nil && len(message.Mentions) == 0 {
-		_, _ = s.ChannelMessageSend(message.ChannelID, Locale.VipIncorrectUser)
+		msg, err := s.ChannelMessageSend(message.ChannelID, Locale.VipIncorrectUser)
+		if err == nil {
+			time.Sleep(20 * time.Second)
+			_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+		}
 		return
 	}
 	if len(args) >= 3 {
 		length, err = strconv.Atoi(args[2])
 		if err != nil {
 			log.Println("Błąd argumentu dni \"" + args[2] + "\" " + err.Error())
-			_, _ = s.ChannelMessageSend(message.ChannelID, Locale.VipIncorrectDaysCount)
+			msg, err := s.ChannelMessageSend(message.ChannelID, Locale.VipIncorrectDaysCount)
+			if err == nil {
+				time.Sleep(20 * time.Second)
+				_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+			}
 			return
 		}
 	} else {
@@ -58,13 +70,21 @@ func handleVipCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 		role, err := getRoleID(message.GuildID, Config.PermittedRoleName)
 		if err != nil {
 			log.Println("Nie udalo sie pobrac roli vip " + err.Error())
-			_, _ = s.ChannelMessageSend(message.ChannelID, Locale.UnexpectedApiError)
+			msg, err := s.ChannelMessageSend(message.ChannelID, Locale.UnexpectedApiError)
+			if err == nil {
+				time.Sleep(20 * time.Second)
+				_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+			}
 			return
 		}
 		err = s.GuildMemberRoleAdd(message.GuildID, message.Mentions[0].ID, role)
 		if err != nil {
 			log.Println("Błąd nadawania rangi " + err.Error())
-			_, _ = s.ChannelMessageSend(message.ChannelID, Locale.UnexpectedApiError)
+			msg, err := s.ChannelMessageSend(message.ChannelID, Locale.UnexpectedApiError)
+			if err == nil {
+				time.Sleep(20 * time.Second)
+				_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+			}
 			return
 		}
 		log.Println("Status VIP użytkownika " + message.Mentions[0].Username + "#" + message.Mentions[0].Discriminator + " został utworzony na " + strconv.Itoa(length) + " dni")
@@ -88,13 +108,21 @@ func handleVipCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 	role, err := getRoleID(message.GuildID, Config.PermittedRoleName)
 	if err != nil {
 		log.Println("Nie udalo sie pobrac roli vip " + err.Error())
-		_, _ = s.ChannelMessageSend(message.ChannelID, Locale.UnexpectedApiError)
+		msg, err := s.ChannelMessageSend(message.ChannelID, Locale.UnexpectedApiError)
+		if err == nil {
+			time.Sleep(20 * time.Second)
+			_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+		}
 		return
 	}
 	err = s.GuildMemberRoleAdd(message.GuildID, message.Mentions[0].ID, role)
 	if err != nil {
 		log.Println("Błąd nadawania rangi " + err.Error())
-		_, _ = s.ChannelMessageSend(message.ChannelID, Locale.UnexpectedApiError)
+		msg, err := s.ChannelMessageSend(message.ChannelID, Locale.UnexpectedApiError)
+		if err == nil {
+			time.Sleep(20 * time.Second)
+			_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+		}
 		return
 	}
 	log.Println("Status VIP użytkownika " + message.Mentions[0].Username + "#" + message.Mentions[0].Discriminator + " został utworzony na " + strconv.Itoa(length) + " dni")

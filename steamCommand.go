@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
 
 //error używany przy zwracaniu błędu braku profilu w funkcji wydobywania steamid64
@@ -109,8 +110,6 @@ func linkUserSteamID(discordID, steamID string) State {
 	//a jeżeli takowy wpis jest
 	linkedUser.SteamID64.String = steamID
 	linkedUser.SteamID64.Valid = true
-	// dla pewności
-	linkedUser.Valid = true
 	_, err = DbMap.Update(&linkedUser)
 	if err != nil {
 		log.Println("Błąd połączenia z bazą danych!\n" + err.Error())
@@ -126,7 +125,11 @@ func handleSteamCommand(s *discordgo.Session, message *discordgo.MessageCreate) 
 		return
 	}
 	if !hasRole(member, Config.PermittedRoleName, message.GuildID) {
-		_, _ = s.ChannelMessageSend(message.ChannelID, Locale.NoPermission)
+		msg, err := s.ChannelMessageSend(message.ChannelID, Locale.NoPermission)
+		if err == nil {
+			time.Sleep(20 * time.Second)
+			_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+		}
 		return
 	}
 	// dzielimy wiadomość po spacjach dla wygody
@@ -160,11 +163,19 @@ func handleSteamCommand(s *discordgo.Session, message *discordgo.MessageCreate) 
 				}
 				return
 			} else if err != NoSuchProfileError {
-				_, _ = s.ChannelMessageSend(message.ChannelID, Locale.UnexpectedApiError)
+				msg, err := s.ChannelMessageSend(message.ChannelID, Locale.UnexpectedApiError)
+				if err == nil {
+					time.Sleep(20 * time.Second)
+					_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+				}
 				return
 			}
 		}
-		_, _ = s.ChannelMessageSend(message.ChannelID, Locale.SteamInvalidProfileLink)
+		msg, err := s.ChannelMessageSend(message.ChannelID, Locale.SteamInvalidProfileLink)
+		if err == nil {
+			time.Sleep(20 * time.Second)
+			_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+		}
 		return
 	}
 	//interesuje nas tylko to, co jest po id/
@@ -174,11 +185,19 @@ func handleSteamCommand(s *discordgo.Session, message *discordgo.MessageCreate) 
 	if err != nil {
 		// ale ktoś może podać zły link i taki profil nie istnieje!
 		if err == NoSuchProfileError {
-			_, _ = s.ChannelMessageSend(message.ChannelID, Locale.SteamInvalidProfileId)
+			msg, err := s.ChannelMessageSend(message.ChannelID, Locale.SteamInvalidProfileId)
+			if err == nil {
+				time.Sleep(20 * time.Second)
+				_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+			}
 			return
 		}
 		// może też wystąpić jakiś nieoczekiwany błąd..
-		_, _ = s.ChannelMessageSend(message.ChannelID, Locale.UnexpectedApiError)
+		msg, err1 := s.ChannelMessageSend(message.ChannelID, Locale.UnexpectedApiError)
+		if err1 == nil {
+			time.Sleep(20 * time.Second)
+			_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+		}
 		log.Println("Błąd przy odczycie danych z API!\n" + err.Error())
 		return
 	}
