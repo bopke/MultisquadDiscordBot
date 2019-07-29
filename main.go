@@ -88,6 +88,7 @@ func checkUsers() {
 		}
 		if linkedUser.ExpirationDate.Before(time.Now()) {
 			if hasRole {
+				log.Println("Wykryłem że użytkownik " + member.User.Username + "#" + member.User.Discriminator + " ma vipa, ale już nie powinien go mieć. Odbieram.")
 				err = session.GuildMemberRoleRemove(Config.ServerId, linkedUser.DiscordID, roleId)
 				if err != nil {
 					log.Println("Błąd usuwania rangi użytkownika " + err.Error())
@@ -99,6 +100,7 @@ func checkUsers() {
 			}
 		} else if linkedUser.ExpirationDate.Before(time.Now().Add(3 * time.Hour * 24)) {
 			if !hasRole {
+				log.Println("Wykryłem że użytkownik " + member.User.Username + "#" + member.User.Discriminator + " nie ma vipa, a powinien go mieć. Nadaję.")
 				err = session.GuildMemberRoleAdd(Config.ServerId, linkedUser.DiscordID, roleId)
 				if err != nil {
 					log.Println("Błąd dodawania rangi użytkownika " + err.Error())
@@ -112,6 +114,7 @@ func checkUsers() {
 			}
 		}
 		if !hasRole {
+			log.Println("Wykryłem że użytkownik " + member.User.Username + "#" + member.User.Discriminator + " nie ma vipa, a powinien go mieć. Nadaję.")
 			err = session.GuildMemberRoleAdd(Config.ServerId, linkedUser.DiscordID, roleId)
 			if err != nil {
 				log.Println("Błąd dodawania rangi użytkownika " + err.Error())
@@ -144,6 +147,7 @@ func checkUsers() {
 				}
 			}
 			if hasRole {
+				log.Println("Wykryłem że użytkownik " + member.User.Username + "#" + member.User.Discriminator + " ma vipa, ale już nie powinien go mieć. Odbieram.")
 				_ = session.GuildMemberRoleRemove(Config.ServerId, member.User.ID, roleId)
 			}
 		}
