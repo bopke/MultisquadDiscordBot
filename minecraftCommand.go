@@ -5,7 +5,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"log"
 	"strings"
-	"time"
 )
 
 func handleMinecraftCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
@@ -46,14 +45,11 @@ func linkUserMinecraftNickname(discordID, minecraftNickname string) State {
 	var linkedUser LinkedUsers
 	// sprawdzamy, czy takie id discorda jest już powiązane, unikamy duplikatów ,aktualizujemy.
 	err := DbMap.SelectOne(&linkedUser, "SELECT * FROM LinkedUsers WHERE discord_id=?", discordID)
-	linkedUser.ExpirationDate = time.Now().Add(24 * time.Hour)
 	// jeżeli nie ma wpisu z takim discord id...
 	if err == sql.ErrNoRows {
 		linkedUser.DiscordID = discordID
 		linkedUser.MinecraftNickname.String = minecraftNickname
 		linkedUser.MinecraftNickname.Valid = true
-		linkedUser.Valid = true
-		linkedUser.ExpirationDate = time.Now().Add(3 * time.Hour * 24)
 		err = DbMap.Insert(&linkedUser)
 		if err != nil {
 			log.Println("Błąd połączenia z bazą danych!\n" + err.Error())
