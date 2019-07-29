@@ -147,14 +147,13 @@ func checkUsers() {
 				_ = session.GuildMemberRoleRemove(Config.ServerId, member.User.ID, roleId)
 			}
 		}
-		log.Println("co")
-		if len(members) == 1000 {
-			log.Println("co")
-			members, err = session.GuildMembers(Config.ServerId, members[999].User.ID, 1000)
-			if err != nil {
-				log.Println("Błąd pobierania użytkowników serwera " + err.Error())
-				return
-			}
+		if len(members) != 1000 {
+			break
+		}
+		members, err = session.GuildMembers(Config.ServerId, members[999].User.ID, 1000)
+		if err != nil {
+			log.Println("Błąd pobierania użytkowników serwera " + err.Error())
+			return
 		}
 	}
 }
