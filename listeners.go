@@ -17,11 +17,24 @@ func InitRateLimits() {
 	rateLimits[Config.MinecraftCommandName] = map[string]time.Time{}
 }
 
+func tickRatelimitCounter(msg *discordgo.Message, duration int) {
+	for ; duration > 0; duration-- {
+		start := time.Now()
+		_, _ = session.ChannelMessageEdit(msg.ChannelID, msg.ID, strings.Replace(Locale.RateLimitWait, "{SECONDS}", strconv.Itoa(duration), -1))
+		time.Sleep(start.Add(time.Second).Sub(time.Now()))
+	}
+	_ = session.ChannelMessageDelete(msg.ChannelID, msg.ID)
+}
+
 func isTooEarlyToExecute(command string, message *discordgo.MessageCreate) bool {
 
 	if rateLimits[command][message.Author.ID].Add(10 * time.Second).After(time.Now()) {
-		timeDiff := rateLimits[command][message.Author.ID].Add(10 * time.Second).Sub(time.Now())
-		_, _ = session.ChannelMessageSend(message.ChannelID, strings.Replace(Locale.RateLimitWait, "{SECONDS}", strconv.Itoa(int(timeDiff.Seconds())+1), -1))
+		timeDifference := rateLimits[command][message.Author.ID].Add(10 * time.Second).Sub(time.Now())
+		timeDiff := int(timeDifference.Seconds()) + 1
+		msg, err := session.ChannelMessageSend(message.ChannelID, strings.Replace(Locale.RateLimitWait, "{SECONDS}", strconv.Itoa(timeDiff), -1))
+		if err == nil {
+			go tickRatelimitCounter(msg, timeDiff-1)
+		}
 		return true
 	}
 	rateLimits[command][message.Author.ID] = time.Now()
