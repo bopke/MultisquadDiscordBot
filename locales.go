@@ -49,26 +49,5 @@ func (l *Locales) load() {
 	if err != nil {
 		log.Panic("loadLocales Decoder.Decode(l) " + err.Error())
 	}
-	l.log()
 	return
-}
-
-func (l *Locales) log() {
-	log.Println("===== LOCALES =====")
-	log.Println(" No permission: " + Locale.NoPermission)
-	log.Println(" Steam invalid profile link: " + Locale.SteamInvalidProfileLink)
-	log.Println(" Steam invalid profile id: " + Locale.SteamInvalidProfileId)
-	log.Println(" Steam instruction: " + Locale.SteamInstruction)
-	log.Println(" Database error: " + Locale.DatabaseError)
-	log.Println(" Steam id updated: " + Locale.SteamIdUpdated)
-	log.Println(" Steam id inserted: " + Locale.SteamIdInserted)
-	log.Println(" Unexpected api error: " + Locale.UnexpectedApiError)
-	log.Println(" Minecraft incorrect nickname: " + Locale.MinecraftIncorrectNickname)
-	log.Println(" Minecraft inserted nickname: " + Locale.MinecraftInsertedNickname)
-	log.Println(" Minecraft updated nickname: " + Locale.MinecraftUpdatedNickname)
-	log.Println(" Minecraft instruction: " + Locale.MinecraftInstruction)
-	log.Println(" Status no vip: " + Locale.StatusNoVip)
-	log.Println(" Status expired: " + Locale.StatusExpired)
-	log.Println("Status valid: " + Locale.StatusValid)
-	log.Println("===== LOCALES =====")
 }
