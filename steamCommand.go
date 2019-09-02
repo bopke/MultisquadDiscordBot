@@ -180,6 +180,7 @@ func handleSteamCommand(s *discordgo.Session, message *discordgo.MessageCreate) 
 	}
 	//interesuje nas tylko to, co jest po id/
 	args[1] = args[1][22:]
+	args[1] = strings.Split(args[1], "/")[0]
 	// i na podstawie tego możemy pobrać steamID
 	steamId, err := getSteamIdForProfileId(args[1])
 	if err != nil {
