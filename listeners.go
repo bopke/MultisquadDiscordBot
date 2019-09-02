@@ -77,3 +77,7 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 		handleVipCommand(s, message)
 	}
 }
+
+func OnGuildMemberUpdate(s *discordgo.Session, e *discordgo.GuildMemberUpdate) {
+	fixNickname(e.Member)
+}

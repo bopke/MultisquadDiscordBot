@@ -35,6 +35,7 @@ func main() {
 		panic(err)
 	}
 	session.AddHandler(OnMessageCreate)
+	session.AddHandler(OnGuildMemberUpdate)
 	err = session.Open()
 	if err != nil {
 		panic(err)
@@ -45,6 +46,7 @@ func main() {
 	_ = c.AddFunc("0 * * * * *", checkUsers)
 	c.Start()
 
+	go inits()
 	log.Println("Started.")
 	// ten kanał powoduje utrzymanie działania programu dopóki nie przyjdzie do niego sygnał od systemu operacyjnego, że pora się zwijać
 	sc := make(chan os.Signal, 1)
@@ -53,6 +55,24 @@ func main() {
 	err = session.Close()
 	if err != nil {
 		panic(err)
+	}
+}
+
+func inits() {
+	checkNicknames("")
+}
+
+func checkNicknames(after string) {
+	members, err := session.GuildMembers(Config.ServerId, after, 1000)
+	if err != nil {
+		log.Println("Error checking nicknames " + err.Error())
+		return
+	}
+	for _, member := range members {
+		fixNickname(member)
+	}
+	if len(members) == 1000 {
+		checkNicknames(members[999].User.ID)
 	}
 }
 
@@ -161,4 +181,46 @@ func checkUsers() {
 			return
 		}
 	}
+}
+
+func fixNickname(member *discordgo.Member) {
+	var newNickname string
+	if member.Nick == "" {
+		newNickname = clearUsername(member.User.Username)
+	} else {
+		newNickname = clearUsername(member.Nick)
+		if len(newNickname) < 3 {
+			newNickname = clearUsername(member.User.Username)
+		}
+	}
+	if len(newNickname) < 3 {
+		newNickname = clearUsername("Zmień nick")
+	}
+	if member.Nick == newNickname || (newNickname == member.User.Username && (member.Nick == member.User.Username || member.Nick == "")) {
+		return
+	}
+	log.Println(newNickname)
+	err := session.GuildMemberNickname(Config.ServerId, member.User.ID, newNickname)
+	if err != nil {
+		log.Println("Unable to change nickname of " + member.User.Username + "#" + member.User.Discriminator + ".")
+		log.Println(err)
+	}
+
+}
+func clearUsername(username string) string {
+	cleared := ""
+	for _, char := range username {
+		for _, legalChar := range Config.AllowedNicknameChars {
+			if char == legalChar {
+				cleared += string(char)
+			}
+		}
+	}
+	for ; len(cleared) > 0 && cleared[0] == ' '; cleared = cleared[1:] {
+		// if space is allowed, it still cannot be the first character
+	}
+	for ; len(cleared) > 0 && cleared[len(cleared)-1] == ' '; cleared = cleared[:len(cleared)-1] {
+		// if space is allowed, it still cannot be last character
+	}
+	return cleared
 }

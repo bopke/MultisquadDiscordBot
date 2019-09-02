@@ -14,5 +14,6 @@
   "server_id": "INSERT_SERVER_ID_HERE",
   "discord_token": "INSERT_DISCORD_TOKEN_HERE",
   "steam_api_token": "STEAM_API_TOKEN_HERE",
-  "announcement_channel_id": ""
+  "announcement_channel_id": "",
+  "allowed_nickname_chars": "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890_ ęóąśłżźćńĘÓĄŚŁŻŹĆŃ"
 }

@@ -24,6 +24,7 @@ type Configuration struct {
 	AdminRoleName         string `json:"admin_role_name"`
 	ServerId              string `json:"server_id"`
 	AnnouncementChannelId string `json:"announcement_channel_id"`
+	AllowedNicknameChars  string `json:"allowed_nickname_chars"`
 }
 
 // zmienna globalna która będzie przechowywać konfigurację
