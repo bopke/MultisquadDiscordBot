@@ -199,7 +199,7 @@ func fixNickname(member *discordgo.Member) {
 	if member.Nick == newNickname || (newNickname == member.User.Username && (member.Nick == member.User.Username || member.Nick == "")) {
 		return
 	}
-	log.Println(newNickname)
+	log.Println("Changing nickname of " + member.User.Username + "#" + member.User.Discriminator + " to " + newNickname)
 	err := session.GuildMemberNickname(Config.ServerId, member.User.ID, newNickname)
 	if err != nil {
 		log.Println("Unable to change nickname of " + member.User.Username + "#" + member.User.Discriminator + ".")
