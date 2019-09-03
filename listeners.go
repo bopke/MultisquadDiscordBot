@@ -79,5 +79,8 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 }
 
 func OnGuildMemberUpdate(s *discordgo.Session, e *discordgo.GuildMemberUpdate) {
+	if !Config.ChangeBotNicknames && e.User.Bot {
+		return
+	}
 	fixNickname(e.Member)
 }

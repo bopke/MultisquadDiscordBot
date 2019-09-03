@@ -15,5 +15,6 @@
   "discord_token": "INSERT_DISCORD_TOKEN_HERE",
   "steam_api_token": "STEAM_API_TOKEN_HERE",
   "announcement_channel_id": "",
-  "allowed_nickname_chars": "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890_ ęóąśłżźćńĘÓĄŚŁŻŹĆŃ"
+  "allowed_nickname_chars": "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890_ ęóąśłżźćńĘÓĄŚŁŻŹĆŃ",
+  "change_bot_nicknames": false
 }
