@@ -16,5 +16,8 @@
   "steam_api_token": "STEAM_API_TOKEN_HERE",
   "announcement_channel_id": "",
   "allowed_nickname_chars": "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890_ ęóąśłżźćńĘÓĄŚŁŻŹĆŃ",
-  "change_bot_nicknames": false
+  "change_bot_nicknames": false,
+  "rules_message_id": "INSERT_MESSAGE_ID_WITH_RULES_HERE",
+  "rules_agreement_emoji_name": "✅",
+  "verified_roles_ids": []
 }

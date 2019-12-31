@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/bwmarrin/discordgo"
 	"log"
+	"math/rand"
 	"strconv"
 	"strings"
 	"time"
@@ -83,4 +84,54 @@ func OnGuildMemberUpdate(s *discordgo.Session, e *discordgo.GuildMemberUpdate) {
 		return
 	}
 	fixNickname(e.Member)
+}
+
+func OnMessageReactionAdd(s *discordgo.Session, reaction *discordgo.MessageReactionAdd) {
+	if reaction.MessageID != Config.RulesMessageId {
+		return
+	}
+	if reaction.Emoji.Name != Config.RulesAgreementEmojiName {
+		return
+	}
+	if len(Config.VerifiedRolesIds) == 0 {
+		return
+	}
+	member, err := s.GuildMember(reaction.GuildID, reaction.UserID)
+	if err != nil {
+		log.Println("OnMessageReactionAdd Unable to get member! ", err)
+		return
+	}
+	for _, roleId := range member.Roles {
+		if roleId == Config.VerifiedRolesIds[0] {
+			return
+		}
+	}
+	wasAbleToAddAllRoles := true
+	for _, roleId := range Config.VerifiedRolesIds {
+		err = s.GuildMemberRoleAdd(reaction.GuildID, reaction.UserID, roleId)
+		if err != nil {
+			wasAbleToAddAllRoles = false
+		}
+	}
+	embed := &discordgo.MessageEmbed{
+		Title:       "Witaj na Young Multi",
+		Description: "Siemano " + member.Mention() + "!\n- Przestrzegaj <#320578596223844353>\n- Odbierz rangi na kanale <#581907929184075783>\n- Baw się dobrze!",
+		Timestamp:   time.Now().Format(time.RFC3339),
+		Color:       rand.Intn(0xFFFFFF),
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: "https://media1.tenor.com/images/b7ac38f04efc899c84ff9975132f4add/tenor.gif",
+		},
+	}
+	content := member.Mention() + "<@&661313646659633162>"
+	if !wasAbleToAddAllRoles {
+		content += "\n Nie udało mi się nadać Ci wszystkich ról :worried:"
+	}
+	_, err = s.ChannelMessageSendComplex(Config.AnnouncementChannelId, &discordgo.MessageSend{
+		Content: content,
+		Embed:   embed,
+	})
+	if err != nil {
+		log.Println("OnMessageReactionAdd Unable to send channel message! ", err)
+		return
+	}
 }
