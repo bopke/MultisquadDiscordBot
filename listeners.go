@@ -135,3 +135,10 @@ func OnMessageReactionAdd(s *discordgo.Session, reaction *discordgo.MessageReact
 		return
 	}
 }
+
+func OnGuildMemberAdd(s *discordgo.Session, e *discordgo.GuildMemberAdd) {
+	if !Config.ChangeBotNicknames && e.User.Bot {
+		return
+	}
+	fixNickname(e.Member)
+}
