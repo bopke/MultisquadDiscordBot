@@ -115,7 +115,7 @@ func OnMessageReactionAdd(s *discordgo.Session, reaction *discordgo.MessageReact
 	}
 	embed := &discordgo.MessageEmbed{
 		Title:       "Witaj na Young Multi",
-		Description: "Siemano " + member.Mention() + "!\n- Przestrzegaj <#320578596223844353>\n- Odbierz rangi na kanale <#581907929184075783>\n- Baw się dobrze!",
+		Description: "Siemano " + member.Mention() + "!\n- Przestrzegaj <#320578596223844353>\n- Odbierz rangi na kanale <#662764876355207228>\n- Baw się dobrze!",
 		Timestamp:   time.Now().Format(time.RFC3339),
 		Color:       rand.Intn(0xFFFFFF),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
