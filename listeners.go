@@ -76,6 +76,12 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 	if strings.HasPrefix(message.Content, Config.VipCommandName) {
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
 		handleVipCommand(s, message)
+		return
+	}
+	if strings.HasPrefix(message.Content, Config.ColorCommandName) {
+		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
+		handleColorCommand(s, message)
+		return
 	}
 }
 

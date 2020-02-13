@@ -20,6 +20,16 @@ type LinkedUsers struct {
 	NotifiedExpiration bool           `db:"notified_expiration"`
 }
 
+type ColoredUser struct {
+	Id                 int       `db:"id,primarykey,autoincrement"`
+	DiscordID          string    `db:"discord_id,size:255"`
+	Color              string    `db:"color,size:7"`
+	Valid              bool      `db:"valid"`
+	RoleId             string    `db:"role_id,size:255"`
+	ExpirationDate     time.Time `db:"expiration_date"`
+	NotifiedExpiration bool      `db:"notified_expiration"`
+}
+
 var DbMap gorp.DbMap
 
 //inicjujemy bazę danych
@@ -34,6 +44,7 @@ func InitDB() {
 
 	//dodajemy mapie tabelę której struktura jest zdefiniowana wyżej.
 	DbMap.AddTableWithName(LinkedUsers{}, "LinkedUsers").SetKeys(true, "id")
+	DbMap.AddTableWithName(ColoredUser{}, "ColoredUsers").SetKeys(true, "id")
 
 	err = DbMap.CreateTablesIfNotExists()
 	if err != nil {

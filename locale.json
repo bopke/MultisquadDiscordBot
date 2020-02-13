@@ -23,5 +23,14 @@
   "vip_announcement_inserted": "<a:drama:595421617354702868> Użytkownik {MENTION} kupił VIPa! <a:drama:595421617354702868>",
   "vip_announcement_updated": "<a:drama:595421617354702868> Użytkownik {MENTION} przedłużył VIPa! <a:drama:595421617354702868>",
   "vip_near_expiration_notification": "Hej, {MENTION}, za 3 dni wygasa Twój VIP! :worried:",
-  "vip_expired_notification": "Status VIP użytkownika {MENTION} wygasł."
+  "vip_expired_notification": "Status VIP użytkownika {MENTION} wygasł.",
+  "color_incorrect_days_count": "Podałeś nieprawidłową ilość dni... :worried:",
+  "color_incorrect_color_code": "Podałeś nieprawidłowy kolor... :worried:",
+  "color_incorrect_user": "Komu ten kolor?",
+  "color_inserted": "Kolor użytkownika został dodany!",
+  "color_updated": "Kolor użytkownika został przedłużony!",
+  "color_announcement_inserted": "<a:drama:595421617354702868> Użytkownik {MENTION} kupił kolor! <a:drama:595421617354702868>",
+  "color_announcement_updated": "<a:drama:595421617354702868> Użytkownik {MENTION} przedłużył kolor! <a:drama:595421617354702868>",
+  "color_near_expiration_notification": "Hej, {MENTION}, za 3 dni wygasa Twój kolor! :worried:",
+  "color_expired_notification": "Kolor użytkownika {MENTION} wygasł."
 }

@@ -22,6 +22,21 @@ func getRoleID(guildID string, roleName string) (string, error) {
 	return "", errors.New("no " + roleName + " role available")
 }
 
+func getRole(guildID string, roleName string) (*discordgo.Role, error) {
+	guild, err := session.Guild(guildID)
+	if err != nil {
+		log.Println("getRoleID session.Guild(" + guildID + ") " + err.Error())
+		return nil, err
+	}
+	roles := guild.Roles
+	for _, role := range roles {
+		if role.Name == roleName {
+			return role, nil
+		}
+	}
+	return nil, errors.New("no " + roleName + " role available")
+}
+
 //sprawdza, czy dany użytkownik discorda ma taką rangę na tym serwerze.
 func hasRole(member *discordgo.Member, roleName, guildID string) bool {
 	//z jakiegos powodu w strukturze member GuildID jest puste...

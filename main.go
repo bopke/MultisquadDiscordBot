@@ -80,6 +80,19 @@ func checkNicknames(after string) {
 
 //funkcja odpalana cyklicznie, sprawdza czy wszyscy w bazie nadal są na serwerze i czy są na nim vipami.
 func checkUsers() {
+	checkVips()
+	checkColors()
+}
+
+func checkColors() {
+	var coloredUsers []ColoredUser
+	_, err := DbMap.Select(&coloredUsers, "SELECT * FROM ColoredUsers WHERE valid=true")
+	if err != nil {
+
+	}
+}
+
+func checkVips() {
 	roleId, err := getRoleID(Config.ServerId, Config.PermittedRoleName)
 	if err != nil {
 		log.Println("Błąd pobierania informacji o roli!\n" + err.Error())
