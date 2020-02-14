@@ -82,14 +82,115 @@ func checkNicknames(after string) {
 func checkUsers() {
 	checkVips()
 	checkColors()
+	checkNicknames("")
 }
 
 func checkColors() {
 	var coloredUsers []ColoredUser
 	_, err := DbMap.Select(&coloredUsers, "SELECT * FROM ColoredUsers WHERE valid=true")
 	if err != nil {
-
+		log.Println("checkColors Błąd przy pobieraniu danych z bazy danych!\n" + err.Error())
+		return
 	}
+	for _, user := range coloredUsers {
+		member, err := session.GuildMember(Config.ServerId, user.DiscordID)
+		if err != nil {
+			log.Println("checkColors Błąd pobierania informacji o użytkowniku!\n", err.Error())
+			continue
+		}
+		if user.ExpirationDate.Before(time.Now()) {
+			user.Valid = false
+			if hasRole(member, user.Color, Config.ServerId) {
+				err = session.GuildMemberRoleRemove(Config.ServerId, member.User.ID, user.RoleId)
+				if err != nil {
+					log.Println("checkColors Błąd usuwania rangi użytkownika!\n" + err.Error())
+				}
+			}
+			_, err = DbMap.Update(&user)
+			if err != nil {
+				log.Println("checkColors Błąd aktualizacji danych w bazie!\n" + err.Error())
+				continue
+			}
+			num, err := DbMap.SelectInt("SELECT count(*) FROM ColoredUsers WHERE valid=true AND role_id=?", user.RoleId)
+			if err != nil {
+				log.Println("checkColors Błąd pobierania danych z bazy!\n" + err.Error())
+				continue
+			}
+			if num == 0 {
+				err = session.GuildRoleDelete(Config.ServerId, user.RoleId)
+				if err != nil {
+					log.Println("checkColors Błąd usuwania roli!\n" + err.Error())
+					continue
+				}
+			}
+		} else if user.ExpirationDate.Before(time.Now().Add(3 * time.Hour * 24)) {
+			if !user.NotifiedExpiration {
+				user.NotifiedExpiration = true
+				_, _ = DbMap.Update(&user)
+				_, _ = session.ChannelMessageSend(Config.AnnouncementChannelId, strings.Replace(Locale.ColorNearExpirationNotification, "{MENTION}", member.Mention(), -1))
+			}
+		} else {
+			if !hasRole(member, user.Color, Config.ServerId) {
+				err = session.GuildMemberRoleAdd(Config.ServerId, member.User.ID, user.RoleId)
+				if err != nil {
+					log.Println("checkColors Błąd dodawania rangi użytkownika!\n" + err.Error())
+					continue
+				}
+			}
+		}
+	}
+
+	var cu []ColoredUser
+	_, err = DbMap.Select(&cu, "SELECT role_id FROM ColoredUsers GROUP BY role_id")
+	if err != nil {
+		log.Println("checkColors Błąd pobierania danych z bazy!\n" + err.Error())
+		return
+	}
+
+	members, err := session.GuildMembers(Config.ServerId, "0", 1000)
+	if err != nil {
+		log.Println("Błąd pobierania użytkowników serwera " + err.Error())
+		return
+	}
+	var hasRole bool
+	var roleId string
+	for {
+		roleId = ""
+		for _, member := range members {
+			hasRole = false
+			for _, role := range member.Roles {
+				for _, colors := range cu {
+					if role == colors.RoleId {
+						hasRole = true
+						roleId = colors.RoleId
+						break
+					}
+				}
+			}
+			if hasRole != true {
+				continue
+			}
+			for _, user := range coloredUsers {
+				if user.DiscordID == member.User.ID {
+					hasRole = false
+					break
+				}
+			}
+			if hasRole {
+				log.Println("Wykryłem że użytkownik " + member.User.Username + "#" + member.User.Discriminator + " ma kolor, ale już nie powinien go mieć. Odbieram.")
+				_ = session.GuildMemberRoleRemove(Config.ServerId, member.User.ID, roleId)
+			}
+		}
+		if len(members) != 1000 {
+			break
+		}
+		members, err = session.GuildMembers(Config.ServerId, members[999].User.ID, 1000)
+		if err != nil {
+			log.Println("Błąd pobierania użytkowników serwera " + err.Error())
+			return
+		}
+	}
+
 }
 
 func checkVips() {
