@@ -61,6 +61,8 @@ func main() {
 }
 
 func inits() {
+	checkColors()
+	checkVips()
 	checkNicknames("")
 }
 
@@ -93,15 +95,17 @@ func checkColors() {
 		return
 	}
 	for _, user := range coloredUsers {
+		roleId, err := getRoleID(Config.ServerId, user.Color)
 		member, err := session.GuildMember(Config.ServerId, user.DiscordID)
 		if err != nil {
 			log.Println("checkColors Błąd pobierania informacji o użytkowniku!\n", err.Error())
 			continue
 		}
 		if user.ExpirationDate.Before(time.Now()) {
+			_, _ = session.ChannelMessageSend(Config.AnnouncementChannelId, strings.Replace(Locale.ColorExpiredNotification, "{MENTION}", member.Mention(), -1))
 			user.Valid = false
 			if hasRole(member, user.Color, Config.ServerId) {
-				err = session.GuildMemberRoleRemove(Config.ServerId, member.User.ID, user.RoleId)
+				err = session.GuildMemberRoleRemove(Config.ServerId, member.User.ID, roleId)
 				if err != nil {
 					log.Println("checkColors Błąd usuwania rangi użytkownika!\n" + err.Error())
 				}
@@ -110,28 +114,31 @@ func checkColors() {
 			if err != nil {
 				log.Println("checkColors Błąd aktualizacji danych w bazie!\n" + err.Error())
 				continue
-			}
-			num, err := DbMap.SelectInt("SELECT count(*) FROM ColoredUsers WHERE valid=true AND role_id=?", user.RoleId)
-			if err != nil {
-				log.Println("checkColors Błąd pobierania danych z bazy!\n" + err.Error())
-				continue
-			}
-			if num == 0 {
-				err = session.GuildRoleDelete(Config.ServerId, user.RoleId)
+			} /*
+				num, err := DbMap.SelectInt("SELECT count(*) FROM ColoredUsers WHERE valid=true AND role_id=?", user.RoleId)
 				if err != nil {
-					log.Println("checkColors Błąd usuwania roli!\n" + err.Error())
+					log.Println("checkColors Błąd pobierania danych z bazy!\n" + err.Error())
 					continue
 				}
-			}
+				if num == 0 {
+					err = session.GuildRoleDelete(Config.ServerId, user.RoleId)
+					if err != nil {
+						log.Println("checkColors Błąd usuwania roli!\n" + err.Error())
+						continue
+					}
+				}*/
 		} else if user.ExpirationDate.Before(time.Now().Add(3 * time.Hour * 24)) {
 			if !user.NotifiedExpiration {
 				user.NotifiedExpiration = true
 				_, _ = DbMap.Update(&user)
-				_, _ = session.ChannelMessageSend(Config.AnnouncementChannelId, strings.Replace(Locale.ColorNearExpirationNotification, "{MENTION}", member.Mention(), -1))
+				_, err = session.ChannelMessageSend(Config.AnnouncementChannelId, strings.Replace(Locale.ColorNearExpirationNotification, "{MENTION}", member.Mention(), -1))
+				if err != nil {
+					log.Println("checkColors blad informowania uzytkownika o wygasaniu\n" + err.Error())
+				}
 			}
 		} else {
 			if !hasRole(member, user.Color, Config.ServerId) {
-				err = session.GuildMemberRoleAdd(Config.ServerId, member.User.ID, user.RoleId)
+				err = session.GuildMemberRoleAdd(Config.ServerId, member.User.ID, roleId)
 				if err != nil {
 					log.Println("checkColors Błąd dodawania rangi użytkownika!\n" + err.Error())
 					continue

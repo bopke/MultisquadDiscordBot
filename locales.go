@@ -40,8 +40,15 @@ type Locales struct {
 	ColorUpdated                    string `json:"color_updated"`
 	ColorAnnouncementInserted       string `json:"color_announcement_inserted"`
 	ColorAnnouncementUpdated        string `json:"color_announcement_updated"`
-	ColorNearExpirationNotification string `json:"vip_near_expiration_notification"`
-	ColorExpiredNotification        string `json:"vip_expired_notification"`
+	ColorNearExpirationNotification string `json:"color_near_expiration_notification"`
+	ColorExpiredNotification        string `json:"color_expired_notification"`
+	RaidConfirmation                string `json:"raid_confirmation"`
+	RaidConfirmationTimed           string `json:"raid_confirmation_timed"`
+	RaidConfirmed                   string `json:"raid_confirmed"`
+	RaidConfirmedTimed              string `json:"raid_confirmed_timed"`
+	RaidEndedTimed                  string `json:"raid_ended_timed"`
+	RaidEnded                       string `json:"raid_ended"`
+	RaidRefused                     string `json:"raid_refused"`
 }
 
 var Locale = new(Locales)

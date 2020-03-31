@@ -83,6 +83,11 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 		handleColorCommand(s, message)
 		return
 	}
+	/*	if strings.HasPrefix(message.Content, Config.RaidCommandName) {
+		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
+		handleRaidCommand(s, message)
+		return
+	}*/
 }
 
 func OnGuildMemberUpdate(s *discordgo.Session, e *discordgo.GuildMemberUpdate) {

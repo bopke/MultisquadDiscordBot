@@ -10,30 +10,59 @@ import (
 )
 
 func checkIfValidColorCode(s string) bool {
-	if len(s) != 7 {
+	// 2020 temporary workaround
+	// i dont want to see this stuff in 2021 and so on
+	// but I probably will
+	switch strings.ToLower(s) {
+	case "niebieski":
+		fallthrough
+	case "aqua":
+		fallthrough
+	case "bordowy":
+		fallthrough
+	case "brązowy":
+		fallthrough
+	case "brzoskwiniowy":
+		fallthrough
+	case "pomarańczowy":
+		fallthrough
+	case "fioletowy":
+		fallthrough
+	case "różowy":
+		fallthrough
+	case "zielony":
+		fallthrough
+	case "szary":
+		return true
+	default:
 		return false
 	}
-	s = strings.ToUpper(s)
-	helper := "0123456789ABCDEF"
-	if s[0] != '#' {
-		return false
-	}
-	for pos, i := range s {
-		if pos == 0 {
-			continue
-		}
-		ok := false
-		for _, j := range helper {
-			if i == j {
-				ok = true
-				break
-			}
-		}
-		if ok == false {
+	return false
+	/*
+		if len(s) != 7 {
 			return false
 		}
-	}
-	return true
+		s = strings.ToUpper(s)
+		helper := "0123456789ABCDEF"
+		if s[0] != '#' {
+			return false
+		}
+		for pos, i := range s {
+			if pos == 0 {
+				continue
+			}
+			ok := false
+			for _, j := range helper {
+				if i == j {
+					ok = true
+					break
+				}
+			}
+			if ok == false {
+				return false
+			}
+		}
+		return true*/
 }
 
 func setColorRole(s *discordgo.Session, message *discordgo.MessageCreate, args []string) error {
@@ -165,6 +194,7 @@ func handleColorCommand(s *discordgo.Session, message *discordgo.MessageCreate) 
 		coloredUser.ExpirationDate = time.Now().Add((time.Hour * 24) * time.Duration(length))
 		coloredUser.NotifiedExpiration = false
 		coloredUser.Color = args[2]
+		coloredUser.RoleId, _ = getRoleID(message.GuildID, args[2])
 		err = DbMap.Insert(&coloredUser)
 		if err != nil {
 			log.Println("Błąd połączenia z bazą danych!\n" + err.Error())
@@ -187,6 +217,7 @@ func handleColorCommand(s *discordgo.Session, message *discordgo.MessageCreate) 
 		return
 	}
 	coloredUser.Color = args[2]
+	coloredUser.RoleId, _ = getRoleID(message.GuildID, args[2])
 	coloredUser.Valid = true
 	if coloredUser.ExpirationDate.Before(time.Now()) {
 		coloredUser.ExpirationDate = time.Now().Add((time.Hour * 24) * time.Duration(length))

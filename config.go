@@ -16,6 +16,7 @@ type Configuration struct {
 	SteamCommandName              string   `json:"steam_command_name"`
 	StatusCommandName             string   `json:"status_command_name"`
 	MinecraftCommandName          string   `json:"minecraft_command_name"`
+	RaidCommandName               string   `json:"raid_command_name"`
 	VipCommandName                string   `json:"vip_command_name"`
 	VipDefaultLength              int      `json:"default_vip_length"`
 	ColorCommandName              string   `json:"color_command_name"`

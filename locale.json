@@ -32,5 +32,12 @@
   "color_announcement_inserted": "<a:drama:595421617354702868> Użytkownik {MENTION} kupił kolor! <a:drama:595421617354702868>",
   "color_announcement_updated": "<a:drama:595421617354702868> Użytkownik {MENTION} przedłużył kolor! <a:drama:595421617354702868>",
   "color_near_expiration_notification": "Hej, {MENTION}, za 3 dni wygasa Twój kolor! :worried:",
-  "color_expired_notification": "Kolor użytkownika {MENTION} wygasł."
+  "color_expired_notification": "Kolor użytkownika {MENTION} wygasł.",
+  "raid_confirmation": "Czy na pewno chcesz włączyć tryb rajdu? Zareaguj :white_check_mark: aby potwierdzić.",
+  "raid_confirmation_timed": "Czy na pewno chcesz włączyć tryb rajdu na {MINUTES} minut? Zareaguj :white_check_mark: aby potwierdzić.",
+  "raid_confirmed": "<a:drama:595421617354702868> Tryb rajdu włączony, zareaguj :octagonal_sign: aby wyłączyć",
+  "raid_confirmed_timed": "<a:drama:595421617354702868> Tryb rajdu włączony na {MINUTES} minut, zareaguj :octagonal_sign: aby wyłączyć przedwcześnie",
+  "raid_ended_timed": "Tryb rajdu zakończony automatycznie",
+  "raid_ended": "Tryb rajdu zakończony",
+  "raid_refused": "Tryb rajdu odrzucony"
 }
