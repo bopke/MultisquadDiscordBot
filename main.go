@@ -38,6 +38,7 @@ func main() {
 	session.AddHandler(OnGuildMemberUpdate)
 	session.AddHandler(OnMessageReactionAdd)
 	session.AddHandler(OnGuildMemberAdd)
+	session.AddHandler(OnDMMessageReactionAdd)
 	err = session.Open()
 	if err != nil {
 		panic(err)

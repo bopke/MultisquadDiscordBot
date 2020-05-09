@@ -42,12 +42,39 @@ func isTooEarlyToExecute(command string, message *discordgo.MessageCreate) bool 
 	return false
 }
 
+func OnDMMessageReactionAdd(s *discordgo.Session, reaction *discordgo.MessageReactionAdd) {
+	channel, err := s.Channel(reaction.ChannelID)
+	if err != nil {
+		log.Println("OnMessageCreate Unable to retrieve channel ", err)
+		return
+	}
+	if channel.Type == discordgo.ChannelTypeDM {
+		handleDMReactions(s, reaction, channel)
+		return
+	}
+}
+
 // funkcja ta przyjmuje każdą wiadomość która zostanie wysłana na kanałach, które widzi bot i analizuje ją.
 func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
+	if s.State.User.ID == message.Author.ID {
+		return
+	}
+
+	channel, err := s.Channel(message.ChannelID)
+	if err != nil {
+		log.Println("OnMessageCreate Unable to retrieve channel ", err)
+		return
+	}
+	if channel.Type == discordgo.ChannelTypeDM {
+		handleDMMessages(s, message, channel)
+		return
+	}
+
 	//jeżeli wiadomość jest na serwerze innym niż nasz oczekiwany to wywalać z tymi komendami.
 	if message.GuildID != Config.ServerId {
 		return
 	}
+
 	// jeżeli wiadomość zaczyna się od naszej komendy to analizujemy dalej
 	if strings.HasPrefix(message.Content, Config.SteamCommandName) {
 		if isTooEarlyToExecute(Config.SteamCommandName, message) {
@@ -81,6 +108,11 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 	if strings.HasPrefix(message.Content, Config.ColorCommandName) {
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
 		handleColorCommand(s, message)
+		return
+	}
+	if strings.HasPrefix(message.Content, "!report") {
+		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
+		handleReportCommand(s, message)
 		return
 	}
 }
