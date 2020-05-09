@@ -103,7 +103,7 @@ func handleReportCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	_, err = s.ChannelMessageSend(dmChannel.ID, Locale.ReportStage1Message)
 	if err != nil {
-		msg, err := s.ChannelMessageSend(m.ChannelID, Locale.ErrorCreatingDMChannel)
+		msg, err := s.ChannelMessageSend(m.ChannelID, strings.ReplaceAll(Locale.ErrorCreatingDMChannel, "{MENTION}", m.Author.Mention()))
 		if err == nil {
 			time.Sleep(20 * time.Second)
 			_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)

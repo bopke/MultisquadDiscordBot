@@ -39,6 +39,6 @@
   "report_stage_4_message": "Czy jesteś świadomy, że fałszywe zgłoszenia będą karane warnami, mutami lub banami? Zareaguj ✅, by wysłać swoje zgłoszenie.",
   "report_confirmed_message": "Dziękujemy za zgłoszenie. Jeśli sprawa zostanie wyjasniona, zostaniesz o tym powiadomiony. ",
   "report_declined_message": "Twoje zgłoszenie NIE zostało wysłane. Zacznij proces od początku.",
-  "error_creating_dm_channel": "Nie moge do Ciebie napisać, chyba blokujesz wiadomości od botów :(\nNie lubisz mnie?",
+  "error_creating_dm_channel": "{MENTION} Nie moge do Ciebie napisać, chyba blokujesz wiadomości od botów :( Nie lubisz mnie?",
   "error_no_reported_user": "Ale kogo chcesz zgłosić? :worried:"
 }
