@@ -50,6 +50,13 @@ type Locales struct {
 	ReportDeclinedMessage           string `json:"report_declined_message"`
 	ErrorCreatingDMChannel          string `json:"error_creating_dm_channel"`
 	ErrorNoReportedUser             string `json:"error_no_reported_user"`
+	RaidConfirmation                string `json:"raid_confirmation"`
+	RaidConfirmationTimed           string `json:"raid_confirmation_timed"`
+	RaidConfirmed                   string `json:"raid_confirmed"`
+	RaidConfirmedTimed              string `json:"raid_confirmed_timed"`
+	RaidEndedTimed                  string `json:"raid_ended_timed"`
+	RaidEnded                       string `json:"raid_ended"`
+	RaidRefused                     string `json:"raid_refused"`
 }
 
 var Locale = new(Locales)

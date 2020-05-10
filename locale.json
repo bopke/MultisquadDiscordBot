@@ -40,5 +40,12 @@
   "report_confirmed_message": "Dziękujemy za zgłoszenie. Jeśli sprawa zostanie wyjasniona, zostaniesz o tym powiadomiony. ",
   "report_declined_message": "Twoje zgłoszenie NIE zostało wysłane. Zacznij proces od początku.",
   "error_creating_dm_channel": "{MENTION} Nie moge do Ciebie napisać, chyba blokujesz wiadomości od botów :( Nie lubisz mnie?",
-  "error_no_reported_user": "Ale kogo chcesz zgłosić? :worried:"
+  "error_no_reported_user": "Ale kogo chcesz zgłosić? :worried:",
+  "raid_confirmation": "Czy na pewno chcesz włączyć tryb rajdu? Zareaguj :white_check_mark: aby potwierdzić.",
+  "raid_confirmation_timed": "Czy na pewno chcesz włączyć tryb rajdu na {MINUTES} minut? Zareaguj :white_check_mark: aby potwierdzić.",
+  "raid_confirmed": "<a:drama:595421617354702868> Tryb rajdu włączony, zareaguj :octagonal_sign: aby wyłączyć",
+  "raid_confirmed_timed": "<a:drama:595421617354702868> Tryb rajdu włączony na {MINUTES} minut, zareaguj :octagonal_sign: aby wyłączyć przedwcześnie",
+  "raid_ended_timed": "Tryb rajdu zakończony automatycznie",
+  "raid_ended": "Tryb rajdu zakończony",
+  "raid_refused": "Tryb rajdu odrzucony"
 }

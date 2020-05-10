@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+type minecraftratelimits struct {
+	times int
+	t     time.Time
+}
+
 var rateLimits map[string]map[string]time.Time
 
 func InitRateLimits() {
@@ -16,6 +21,7 @@ func InitRateLimits() {
 	rateLimits[Config.SteamCommandName] = map[string]time.Time{}
 	rateLimits[Config.StatusCommandName] = map[string]time.Time{}
 	rateLimits[Config.MinecraftCommandName] = map[string]time.Time{}
+	minecraftratelimit = map[string]*minecraftratelimits{}
 }
 
 func tickRatelimitCounter(msg *discordgo.Message, duration int) {
@@ -39,6 +45,25 @@ func isTooEarlyToExecute(command string, message *discordgo.MessageCreate) bool 
 		return true
 	}
 	rateLimits[command][message.Author.ID] = time.Now()
+	return false
+}
+
+var minecraftratelimit map[string]*minecraftratelimits
+
+func isTooEarlyToExecuteMinecraft(command string, message *discordgo.MessageCreate) bool {
+	if rl, ok := minecraftratelimit[message.Author.ID]; ok {
+		if rl.times == 1 {
+			if rl.t.YearDay() != time.Now().YearDay() {
+				rl.times = 0
+				return false
+			}
+			return true
+		}
+	}
+	minecraftratelimit[message.Author.ID] = &minecraftratelimits{
+		times: 1,
+		t:     time.Now(),
+	}
 	return false
 }
 
@@ -93,7 +118,7 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 		return
 	}
 	if strings.HasPrefix(message.Content, Config.MinecraftCommandName) {
-		if isTooEarlyToExecute(Config.MinecraftCommandName, message) {
+		if isTooEarlyToExecuteMinecraft(Config.MinecraftCommandName, message) {
 			return
 		}
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
@@ -115,6 +140,11 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 		handleReportCommand(s, message)
 		return
 	}
+	/*	if strings.HasPrefix(message.Content, Config.RaidCommandName) {
+		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
+		handleRaidCommand(s, message)
+		return
+	}*/
 }
 
 func OnGuildMemberUpdate(s *discordgo.Session, e *discordgo.GuildMemberUpdate) {
