@@ -79,7 +79,11 @@ func handleDMMessages(s *discordgo.Session, message *discordgo.MessageCreate, ch
 }
 
 func handleReportCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
-	_ = s.ChannelMessageDelete(m.ChannelID, m.ID)
+	err := s.ChannelMessageDelete(m.ChannelID, m.ID)
+	if err != nil {
+		log.Println("handleReportMessage Unable to delete message! ", err)
+	}
+
 	reportDMChannelsStagesMutex.Lock()
 	log.Println("Tworze nowy report")
 	defer reportDMChannelsStagesMutex.Unlock()
@@ -88,7 +92,11 @@ func handleReportCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 		msg, err := s.ChannelMessageSend(m.ChannelID, Locale.ErrorNoReportedUser)
 		if err == nil {
 			time.Sleep(20 * time.Second)
-			_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+			err = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+			if err != nil {
+				log.Println("handleReportMessage Unable to delete message! ", err)
+			}
+
 		}
 		return
 	}
@@ -97,7 +105,11 @@ func handleReportCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 		msg, err := s.ChannelMessageSend(m.ChannelID, Locale.ErrorCreatingDMChannel)
 		if err == nil {
 			time.Sleep(20 * time.Second)
-			_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+			err = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+			if err != nil {
+				log.Println("handleReportMessage Unable to delete message! ", err)
+			}
+
 		}
 		return
 	}
@@ -106,7 +118,10 @@ func handleReportCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 		msg, err := s.ChannelMessageSend(m.ChannelID, strings.ReplaceAll(Locale.ErrorCreatingDMChannel, "{MENTION}", m.Author.Mention()))
 		if err == nil {
 			time.Sleep(20 * time.Second)
-			_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+			err = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+			if err != nil {
+				log.Println("handleReportMessage Unable to delete message! ", err)
+			}
 		}
 		return
 	}
@@ -150,6 +165,7 @@ func sendFullDMReport(data *ReportDMData) {
 		}
 		embed.Fields[i].Value = info
 	}
+	_, _ = session.ChannelMessageSend(Config.ReportsChannelId, "<@&610997643413291008> <@&320577390965424138>")
 	_, err := session.ChannelMessageSendEmbed(Config.ReportsChannelId, embed)
 	if err != nil {
 		_, _ = session.ChannelMessageSend(Config.ReportsChannelId, "Dostałem zgłoszenie, ale było zbyt długie aby wrzucić je w jednym embedzie. Wrzucam tekstowo w oddzielnych wiadomościach.")
