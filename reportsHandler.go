@@ -165,8 +165,11 @@ func sendFullDMReport(data *ReportDMData) {
 		}
 		embed.Fields[i].Value = info
 	}
-	_, _ = session.ChannelMessageSend(Config.ReportsChannelId, "<@&610997643413291008> <@&320577390965424138>")
-	_, err := session.ChannelMessageSendEmbed(Config.ReportsChannelId, embed)
+	_, err := session.ChannelMessageSend(Config.ReportsChannelId, "<@&610997643413291008> <@&320577390965424138>")
+	if err != nil {
+		log.Println("sendFullDMReport unable to send pings! ", err)
+	}
+	_, err = session.ChannelMessageSendEmbed(Config.ReportsChannelId, embed)
 	if err != nil {
 		_, _ = session.ChannelMessageSend(Config.ReportsChannelId, "Dostałem zgłoszenie, ale było zbyt długie aby wrzucić je w jednym embedzie. Wrzucam tekstowo w oddzielnych wiadomościach.")
 		_, _ = session.ChannelMessageSend(Config.ReportsChannelId, embed.Title+"\n"+embed.Description+"\nAutor:\n"+embed.Author.Name)
