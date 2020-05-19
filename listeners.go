@@ -21,7 +21,6 @@ func InitRateLimits() {
 	rateLimits[Config.SteamCommandName] = map[string]time.Time{}
 	rateLimits[Config.StatusCommandName] = map[string]time.Time{}
 	rateLimits[Config.MinecraftCommandName] = map[string]time.Time{}
-	minecraftratelimit = map[string]*minecraftratelimits{}
 }
 
 func tickRatelimitCounter(msg *discordgo.Message, duration int) {
@@ -45,25 +44,6 @@ func isTooEarlyToExecute(command string, message *discordgo.MessageCreate) bool 
 		return true
 	}
 	rateLimits[command][message.Author.ID] = time.Now()
-	return false
-}
-
-var minecraftratelimit map[string]*minecraftratelimits
-
-func isTooEarlyToExecuteMinecraft(command string, message *discordgo.MessageCreate) bool {
-	if rl, ok := minecraftratelimit[message.Author.ID]; ok {
-		if rl.times == 1 {
-			if rl.t.YearDay() != time.Now().YearDay() {
-				rl.times = 0
-				return false
-			}
-			return true
-		}
-	}
-	minecraftratelimit[message.Author.ID] = &minecraftratelimits{
-		times: 1,
-		t:     time.Now(),
-	}
 	return false
 }
 
@@ -118,7 +98,7 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 		return
 	}
 	if strings.HasPrefix(message.Content, Config.MinecraftCommandName) {
-		if isTooEarlyToExecuteMinecraft(Config.MinecraftCommandName, message) {
+		if isTooEarlyToExecute(Config.MinecraftCommandName, message) {
 			return
 		}
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
