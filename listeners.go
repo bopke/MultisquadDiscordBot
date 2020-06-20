@@ -170,7 +170,7 @@ func OnMessageReactionAdd(s *discordgo.Session, reaction *discordgo.MessageReact
 			URL: "https://media1.tenor.com/images/b7ac38f04efc899c84ff9975132f4add/tenor.gif",
 		},
 	}
-	content := member.Mention() + " | <@&660867726037745665>"
+	content := member.Mention()
 	if !wasAbleToAddAllRoles {
 		content += "\n Nie udało mi się nadać Ci wszystkich ról :worried:"
 	}
