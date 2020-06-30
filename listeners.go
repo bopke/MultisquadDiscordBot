@@ -110,6 +110,11 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 		handleColorCommand(s, message)
 		return
 	}
+	if strings.HasPrefix(message.Content, "!announce") {
+		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
+		handleAnnounceCommand(s, message)
+		return
+	}
 	if strings.HasPrefix(message.Content, "!report") {
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
 		handleReportCommand(s, message)
