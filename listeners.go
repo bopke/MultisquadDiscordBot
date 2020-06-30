@@ -9,11 +9,6 @@ import (
 	"time"
 )
 
-type minecraftratelimits struct {
-	times int
-	t     time.Time
-}
-
 var rateLimits map[string]map[string]time.Time
 
 func InitRateLimits() {
