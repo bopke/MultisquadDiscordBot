@@ -42,6 +42,8 @@ type Locales struct {
 	ColorAnnouncementUpdated        string `json:"color_announcement_updated"`
 	ColorNearExpirationNotification string `json:"vip_near_expiration_notification"`
 	ColorExpiredNotification        string `json:"vip_expired_notification"`
+	ReportStage0Message1            string `json:"report_stage_0_message1"`
+	ReportStage0Message2            string `json:"report_stage_0_message2"`
 	ReportStage1Message             string `json:"report_stage_1_message"`
 	ReportStage2Message             string `json:"report_stage_2_message"`
 	ReportStage3Message             string `json:"report_stage_3_message"`

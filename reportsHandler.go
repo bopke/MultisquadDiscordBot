@@ -75,6 +75,17 @@ func handleDMMessages(s *discordgo.Session, message *discordgo.MessageCreate, ch
 		if err != nil {
 			log.Println("handleHMMessage Unable to send DM response on stage 1! ", err)
 		}
+	case 0:
+		if !strings.Contains(message.Content, "<@") {
+			_, _ = s.ChannelMessageSend(message.ChannelID, "No gosciu miales oznaczyć :worried:")
+			return
+		}
+		reportDMData.reportMessage = message.Content
+		reportDMData.Stage = 1
+		_, err := s.ChannelMessageSend(message.ChannelID, Locale.ReportStage1Message)
+		if err != nil {
+			log.Println("handleHMMessage Unable to send DM response on stage 0! ", err)
+		}
 	}
 }
 
@@ -89,14 +100,36 @@ func handleReportCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	defer reportDMChannelsStagesMutex.Unlock()
 	args := strings.Split(m.Content, " ")
 	if len(m.Mentions) == 0 {
-		msg, err := s.ChannelMessageSend(m.ChannelID, Locale.ErrorNoReportedUser)
-		if err == nil {
-			time.Sleep(20 * time.Second)
-			err = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
-			if err != nil {
-				log.Println("handleReportMessage Unable to delete message! ", err)
-			}
+		dmChannel, err := s.UserChannelCreate(m.Author.ID)
+		if err != nil {
+			msg, err := s.ChannelMessageSend(m.ChannelID, Locale.ErrorCreatingDMChannel)
+			if err == nil {
+				time.Sleep(20 * time.Second)
+				err = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+				if err != nil {
+					log.Println("handleReportMessage Unable to delete message! ", err)
+				}
 
+			}
+			return
+		}
+		_, _ = s.ChannelMessageSend(dmChannel.ID, Locale.ReportStage0Message1)
+		_, err = s.ChannelMessageSend(dmChannel.ID, Locale.ReportStage0Message2)
+		if err != nil {
+			msg, err := s.ChannelMessageSend(m.ChannelID, strings.ReplaceAll(Locale.ErrorCreatingDMChannel, "{MENTION}", m.Author.Mention()))
+			if err == nil {
+				time.Sleep(20 * time.Second)
+				err = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+				if err != nil {
+					log.Println("handleReportMessage Unable to delete message! ", err)
+				}
+			}
+			return
+		}
+		reportDMChannelsStages[m.Author.ID] = &ReportDMData{
+			Stage:         0,
+			StageMessages: [3]*discordgo.Message{},
+			reportMessage: "",
 		}
 		return
 	}
