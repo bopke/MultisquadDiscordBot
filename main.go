@@ -46,7 +46,7 @@ func main() {
 
 	// cron - narzędzie do cyklicznego wykonywania zadania. Co minutę będzie odpalać funkcję checkUsers.
 	c := cron.New()
-	_ = c.AddFunc("0 * * * * *", checkUsers)
+	_ = c.AddFunc("0 0 * * * *", checkUsers)
 	c.Start()
 
 	go inits()
