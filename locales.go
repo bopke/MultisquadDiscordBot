@@ -25,6 +25,9 @@ type Locales struct {
 	StatusNoVip                     string `json:"status_no_vip"`
 	StatusExpired                   string `json:"status_expired"`
 	StatusValid                     string `json:"status_valid"`
+	StatusNoVipSomeone              string `json:"status_no_vip_someone"`
+	StatusExpiredSomeone            string `json:"status_expired_someone"`
+	StatusValidSomeone              string `json:"status_valid_someone"`
 	VipIncorrectDaysCount           string `json:"vip_incorrect_days_count"`
 	VipIncorrectUser                string `json:"vip_incorrect_user"`
 	VipInserted                     string `json:"vip_inserted"`
@@ -40,8 +43,8 @@ type Locales struct {
 	ColorUpdated                    string `json:"color_updated"`
 	ColorAnnouncementInserted       string `json:"color_announcement_inserted"`
 	ColorAnnouncementUpdated        string `json:"color_announcement_updated"`
-	ColorNearExpirationNotification string `json:"vip_near_expiration_notification"`
-	ColorExpiredNotification        string `json:"vip_expired_notification"`
+	ColorNearExpirationNotification string `json:"color_near_expiration_notification"`
+	ColorExpiredNotification        string `json:"color_expired_notification"`
 	ReportStage0Message1            string `json:"report_stage_0_message1"`
 	ReportStage0Message2            string `json:"report_stage_0_message2"`
 	ReportStage1Message             string `json:"report_stage_1_message"`
