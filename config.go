@@ -34,6 +34,8 @@ type Configuration struct {
 	RulesAgreementEmojiName       string   `json:"rules_agreement_emoji_name"`
 	VerifiedRolesIds              []string `json:"verified_roles_ids"`
 	ReportsChannelId              string   `json:"reports_channel_id"`
+	ReactionChannelsId            []string `json:"reaction_channels_id"`
+	ReactionId                    string   `json:"reaction_id"`
 }
 
 // zmienna globalna która będzie przechowywać konfigurację

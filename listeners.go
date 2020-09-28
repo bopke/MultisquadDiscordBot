@@ -59,7 +59,7 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 	if s.State.User.ID == message.Author.ID {
 		return
 	}
-
+	addReactionToImage(message.Message)
 	channel, err := s.Channel(message.ChannelID)
 	if err != nil {
 		log.Println("OnMessageCreate Unable to retrieve channel ", err)

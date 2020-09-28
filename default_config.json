@@ -22,5 +22,10 @@
   "change_bot_nicknames": false,
   "rules_message_id": "INSERT_MESSAGE_ID_WITH_RULES_HERE",
   "rules_agreement_emoji_name": "✅",
-  "verified_roles_ids": []
+  "verified_roles_ids": [],
+  "reaction_channels_id": [
+    "588855162077184011",
+    "664518622445568060"
+  ],
+  "reaction_id": "<:lov:582679593060663315"
 }
