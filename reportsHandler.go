@@ -61,6 +61,7 @@ func handleDMMessages(s *discordgo.Session, message *discordgo.MessageCreate, ch
 			log.Println("handleHMMessage Unable to send DM response on stage 3! ", err)
 		}
 		_ = s.MessageReactionAdd(message.ChannelID, msg.ID, "✅")
+		_ = s.MessageReactionAdd(message.ChannelID, msg.ID, "❌")
 	case 2:
 		reportDMData.StageMessages[1] = message.Message
 		reportDMData.Stage = 3
@@ -113,8 +114,22 @@ func handleReportCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			return
 		}
-		_, _ = s.ChannelMessageSend(dmChannel.ID, Locale.ReportStage0Message1)
-		_, err = s.ChannelMessageSend(dmChannel.ID, Locale.ReportStage0Message2)
+		_, _ = s.ChannelMessageSendComplex(dmChannel.ID, &discordgo.MessageSend{
+			Content: Locale.ReportStage0Message1,
+			Embed: &discordgo.MessageEmbed{
+				Image: &discordgo.MessageEmbedImage{
+					URL: "https://cdn.discordapp.com/attachments/599975835717468170/715583005674045470/report1.gif",
+				},
+			},
+		})
+		_, err = s.ChannelMessageSendComplex(dmChannel.ID, &discordgo.MessageSend{
+			Content: Locale.ReportStage0Message2,
+			Embed: &discordgo.MessageEmbed{
+				Image: &discordgo.MessageEmbedImage{
+					URL: "https://cdn.discordapp.com/attachments/599975835717468170/715583017397125180/developer.gif",
+				},
+			},
+		})
 		if err != nil {
 			msg, err := s.ChannelMessageSend(m.ChannelID, strings.ReplaceAll(Locale.ErrorCreatingDMChannel, "{MENTION}", m.Author.Mention()))
 			if err == nil {
@@ -142,7 +157,6 @@ func handleReportCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 			if err != nil {
 				log.Println("handleReportMessage Unable to delete message! ", err)
 			}
-
 		}
 		return
 	}
