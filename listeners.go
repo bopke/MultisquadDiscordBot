@@ -111,6 +111,11 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 		handleVipCommand(s, message)
 		return
 	}
+	if strings.HasPrefix(message.Content, "!unvip") {
+		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
+		handleUnvipCommand(s, message)
+		return
+	}
 	if strings.HasPrefix(message.Content, Config.ColorCommandName) {
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
 		handleColorCommand(s, message)
