@@ -34,11 +34,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	session.AddHandler(OnMessageCreate)
 	session.AddHandler(OnGuildMemberUpdate)
 	session.AddHandler(OnMessageReactionAdd)
 	session.AddHandler(OnGuildMemberAdd)
 	session.AddHandler(OnDMMessageReactionAdd)
+
+	session.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
+
 	err = session.Open()
 	if err != nil {
 		panic(err)
