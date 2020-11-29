@@ -36,6 +36,10 @@ type Configuration struct {
 	ReportsChannelId              string   `json:"reports_channel_id"`
 	ReactionChannelsId            []string `json:"reaction_channels_id"`
 	ReactionId                    string   `json:"reaction_id"`
+	MessageMoneyInterval          int      `json:"message_money_interval_secs"`
+	MessageMoneyMin               int      `json:"message_money_min_value"`
+	MessageMoneyMax               int      `json:"message_money_max_value"`
+	MoneyLogChannelId             string   `json:"money_log_channel_id"`
 }
 
 // zmienna globalna która będzie przechowywać konfigurację

@@ -48,6 +48,12 @@ type ChannelPermissions struct {
 	EveryonePermissionsAllowed int    `db:"permissions_allowed"`
 }
 
+type Money struct {
+	Id     int    `db:"id,primarykey,autoincrement"`
+	UserId string `db:"user_id,size:255"`
+	Amount int    `db:"amount"`
+}
+
 var DbMap gorp.DbMap
 
 //inicjujemy bazę danych
@@ -65,6 +71,7 @@ func InitDB() {
 	DbMap.AddTableWithName(ColoredUser{}, "ColoredUsers").SetKeys(true, "id")
 	DbMap.AddTableWithName(ChannelPermissions{}, "ChannelsPermissions").SetKeys(true, "id")
 	DbMap.AddTableWithName(Raid{}, "Raids").SetKeys(true, "id")
+	DbMap.AddTableWithName(Money{}, "Money").SetKeys(true, "id")
 
 	err = DbMap.CreateTablesIfNotExists()
 	if err != nil {

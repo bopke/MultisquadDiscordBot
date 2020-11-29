@@ -76,6 +76,8 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 		return
 	}
 
+	go handleMessageMoneyCount(s, message)
+
 	// jeżeli wiadomość zaczyna się od naszej komendy to analizujemy dalej
 	if strings.HasPrefix(message.Content, Config.SteamCommandName) {
 		if isTooEarlyToExecute(Config.SteamCommandName, message) {
@@ -130,6 +132,14 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
 		handleReportCommand(s, message)
 		return
+	}
+	if strings.HasPrefix(message.Content, "!money") {
+		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
+		handleMoneyCommand(s, message)
+	}
+	if strings.HasPrefix(message.Content, "!baltop") {
+		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
+		handleBaltopCommand(s, message)
 	}
 	/*	if strings.HasPrefix(message.Content, Config.RaidCommandName) {
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
