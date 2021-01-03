@@ -28,8 +28,8 @@
     "664518622445568060"
   ],
   "reaction_id": "<:lov:582679593060663315",
-  "message_money_interval_secs": 5,
-  "message_money_min_value": 5,
+  "message_money_interval_secs": 90,
+  "message_money_min_value": 1,
   "message_money_max_value": 10,
-  "money_log_channel_id": "597216492123324442"
+  "money_log_channel_id": "613027719902527501"
 }

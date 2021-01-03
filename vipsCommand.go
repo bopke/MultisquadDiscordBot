@@ -31,7 +31,7 @@ func handleVipsCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 	log.Println("Pobrałem informacje o", len(actualVips), "vipach")
 	content := ""
 	for i, actualVip := range actualVips {
-		content += "<@" + actualVip.DiscordID + "> - " + fmt.Sprintf("%4d-%2d-%2d %2d:%2d\n", actualVip.ExpirationDate.Year(), actualVip.ExpirationDate.Month(), actualVip.ExpirationDate.Day(), actualVip.ExpirationDate.Hour(), actualVip.ExpirationDate.Minute())
+		content += "<@" + actualVip.DiscordID + "> - " + fmt.Sprintf("%4d-%02d-%02d %02d:%02d\n", actualVip.ExpirationDate.Year(), actualVip.ExpirationDate.Month(), actualVip.ExpirationDate.Day(), actualVip.ExpirationDate.Hour(), actualVip.ExpirationDate.Minute())
 		if i > 0 && i%20 == 0 {
 			embed := discordgo.MessageEmbed{
 				Title:       "Aktualne VIPy",

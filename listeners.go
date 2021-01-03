@@ -133,13 +133,9 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 		handleReportCommand(s, message)
 		return
 	}
-	if strings.HasPrefix(message.Content, "!money") {
+	if (strings.HasPrefix(message.Content, "!monety") || strings.HasPrefix(message.Content, "!mon")) && message.ChannelID == "581950409094987838" {
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
 		handleMoneyCommand(s, message)
-	}
-	if strings.HasPrefix(message.Content, "!baltop") {
-		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
-		handleBaltopCommand(s, message)
 	}
 	/*	if strings.HasPrefix(message.Content, Config.RaidCommandName) {
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)

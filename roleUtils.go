@@ -53,6 +53,15 @@ func hasRole(member *discordgo.Member, roleName, guildID string) bool {
 	return false
 }
 
+func hasRoleId(member *discordgo.Member, roleId, guildId string) bool {
+	for _, role := range member.Roles {
+		if role == roleId {
+			return true
+		}
+	}
+	return false
+}
+
 func hasPermission(member *discordgo.Member, guildID string, permission int) bool {
 	for _, roleID := range member.Roles {
 		role, err := session.State.Role(guildID, roleID)
