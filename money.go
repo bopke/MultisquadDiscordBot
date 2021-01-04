@@ -227,7 +227,6 @@ func handleMoneyCommand(s *discordgo.Session, message *discordgo.MessageCreate) 
 			handleBaltopCommand(s, message)
 			return
 		}
-		return
 	}
 	if len(message.Mentions) > 0 {
 		checkedUser = message.Mentions[0]
