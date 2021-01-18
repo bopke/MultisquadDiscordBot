@@ -110,7 +110,7 @@ func handleMoneyZerujCommand(s *discordgo.Session, message *discordgo.MessageCre
 }
 
 func handleMoneyManipulateCommand(s *discordgo.Session, message *discordgo.MessageCreate, args []string) {
-	if !hasPermission(message.Member, Config.ServerId, discordgo.PermissionAdministrator) || hasRole(message.Member, "Moderator", Config.ServerId) {
+	if !hasPermission(message.Member, Config.ServerId, discordgo.PermissionAdministrator) && !hasRole(message.Member, "Moderator", Config.ServerId) {
 		_, _ = s.ChannelMessageSend(message.ChannelID, Locale.NoAdminPermission)
 		return
 	}
