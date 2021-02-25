@@ -25,28 +25,28 @@ func handleShopCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 			ProxyIconURL: "",
 		},
 		Fields: []*discordgo.MessageEmbedField{
-			{Name: "1. Nick 500 <a:moneta:613020692346175628>",
-				Value:  "Zmiana nicku. Kup poleceniem `!kup nick <nowy nick>`, np `!kup nick Young Multi`.",
+			{Name: "1. NICK - 500 <a:moneta:613020692346175628>",
+				Value:  "Zmiana nicku.\nKup poleceniem `!kup nick <nowy nick>`, np `!kup nick Young Multi`.",
 				Inline: false,
 			},
-			{Name: "2. Kolor 15.000 <a:moneta:613020692346175628>",
-				Value:  "Zmiana koloru nicku. Kup poleceniem `!kup kolor <nazwa koloru>`, np `!kup kolor pomaranczowy`.\nDostępne kolory: pomarańczowy, jakieś jeszcze idk",
+			{Name: "2. KOLOR - 15.000 <a:moneta:613020692346175628>",
+				Value:  "Zmiana koloru nicku.\nKup poleceniem `!kup kolor <nazwa koloru>`, np `!kup kolor pomaranczowy`.\nDostępne kolory: pomarańczowy, jakieś jeszcze idk",
 				Inline: false,
 			},
-			{Name: "3. Mysterybox 5.000 <a:moneta:613020692346175628>",
-				Value:  "Losowanie itemka (czymkolwiek to jest). Kup poleceniem `!kup mysterybox`.",
+			{Name: "3. MYSTERYBOX - 5.000 <a:moneta:613020692346175628>",
+				Value:  "Losowanie itemka (czymkolwiek to jest).\nKup poleceniem `!kup mysterybox`.",
 				Inline: false,
 			},
-			{Name: "4. VIP 65.000 <a:moneta:613020692346175628>",
-				Value:  "VIP na 30 dni. Kup poleceniem `!kup vip`.",
+			{Name: "4. VIP - 65.000 <a:moneta:613020692346175628>",
+				Value:  "VIP na 30 dni.\nKup poleceniem `!kup vip`.",
 				Inline: false,
 			},
-			{Name: "5. Nitro 90.000 <a:moneta:613020692346175628>",
-				Value:  "Nitro na 30 dni. Wysyłane ręcznie przez administratora. Kup poleceniem `!kup nitro`.",
+			{Name: "5. NITRO - 90.000 <a:moneta:613020692346175628>",
+				Value:  "Nitro na 30 dni.\nWysyłane ręcznie przez administratora. Kup poleceniem `!kup nitro`.",
 				Inline: false,
 			},
-			{Name: "6. Flexer 100.000 <a:moneta:613020692346175628>",
-				Value:  "Ranga Flexer. Kup poleceniem `!kup flexer`.",
+			{Name: "6. FlEXER - 100.000 <a:moneta:613020692346175628>",
+				Value:  "Ranga Flexer.\nKup poleceniem `!kup flexer`.",
 				Inline: false,
 			},
 		},
@@ -62,6 +62,12 @@ func handleBuyCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 	}
 	money := getMoneyForUserId(message.Author.ID)
 	switch strings.ToLower(args[1]) {
+	case "flexer":
+		if money.Amount < 100000 {
+			_, _ = s.ChannelMessageSend(message.ChannelID, "Nie masz wystarczającej ilości pieniędzy :worried:")
+			return
+		}
+
 	case "nick":
 		if money.Amount < 500 {
 			_, _ = s.ChannelMessageSend(message.ChannelID, "Nie masz wystarczającej ilości pieniędzy :worried:")
@@ -73,6 +79,14 @@ func handleBuyCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 		}
 		newNickname := strings.Join(args[2:], " ")
 		newNicknameCleared := clearUsername(newNickname)
+		if len(newNickname) < 3 {
+			_, _ = s.ChannelMessageSend(message.ChannelID, "Nick jest zbyt krótki :worried:")
+			return
+		}
+		if len(newNickname) > 32 {
+			_, _ = s.ChannelMessageSend(message.ChannelID, "Nick jest zbyt długi :worried:")
+			return
+		}
 		if newNickname != newNicknameCleared {
 			_, _ = s.ChannelMessageSend(message.ChannelID, "Nieprawidłowy nick. Możesz spróbować z `"+newNicknameCleared+"`")
 			return

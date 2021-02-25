@@ -143,7 +143,7 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 		handleBuyCommand(s, message)
 		return
 	}
-	if (strings.HasPrefix(message.Content, "!monety") || strings.HasPrefix(message.Content, "!mon")) && message.ChannelID == "581950409094987838" {
+	if strings.HasPrefix(message.Content, "!monety") || strings.HasPrefix(message.Content, "!mon") /*&& message.ChannelID == "581950409094987838"*/ {
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
 		handleMoneyCommand(s, message)
 	}
