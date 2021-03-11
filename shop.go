@@ -321,10 +321,10 @@ func handleBuyCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 		colored.Valid = true
 		colored.RoleId = roleId
 		colored.NotifiedExpiration = false
-		if colored.ExpirationDate.After(time.Now()) {
-			colored.ExpirationDate = colored.ExpirationDate.Add(30 * time.Hour * 24)
+		if colored.ExpirationDate.Before(time.Now()) {
+			colored.ExpirationDate = time.Now().Add((time.Hour * 24) * time.Duration(30))
 		} else {
-			colored.ExpirationDate = time.Now().Add(30 * time.Hour * 24)
+			colored.ExpirationDate = colored.ExpirationDate.Add((time.Hour * 24) * time.Duration(30))
 		}
 		_, _ = DbMap.Update(money)
 		shopLog := ShopLog{
