@@ -20,6 +20,14 @@ type LinkedUsers struct {
 	NotifiedExpiration bool           `db:"notified_expiration"`
 }
 
+type ShopLog struct {
+	Id        int       `db:"id,primarykey,autoincrement"`
+	DiscordId string    `db:"discord_id,size:255"`
+	Item      string    `db:"item,size:255"`
+	Price     int       `db:"price"`
+	Date      time.Time `db:"date"`
+}
+
 type ColoredUser struct {
 	Id                 int       `db:"id,primarykey,autoincrement"`
 	DiscordID          string    `db:"discord_id,size:255"`
@@ -72,6 +80,7 @@ func InitDB() {
 	DbMap.AddTableWithName(ChannelPermissions{}, "ChannelsPermissions").SetKeys(true, "id")
 	DbMap.AddTableWithName(Raid{}, "Raids").SetKeys(true, "id")
 	DbMap.AddTableWithName(Money{}, "Money").SetKeys(true, "id")
+	DbMap.AddTableWithName(ShopLog{}, "ShopLogs").SetKeys(true, "id")
 
 	err = DbMap.CreateTablesIfNotExists()
 	if err != nil {
