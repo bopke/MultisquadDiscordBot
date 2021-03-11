@@ -304,6 +304,7 @@ func handleBuyCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 			log.Println(err)
 			return
 		}
+	badstuff:
 		var colored ColoredUser
 		err = DbMap.SelectOne(&colored, "SELECT * FROM ColoredUsers WHERE discord_id=?", message.Author.ID)
 		if err != nil {
@@ -312,6 +313,8 @@ func handleBuyCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 					DiscordID:      message.Author.ID,
 					ExpirationDate: time.Now().Add(-3000 * time.Hour),
 				}
+				_ = DbMap.Insert(colored)
+				goto badstuff
 			} else {
 				log.Println("Błąd komunikacji z bazą")
 				return
@@ -326,6 +329,7 @@ func handleBuyCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 		} else {
 			colored.ExpirationDate = colored.ExpirationDate.Add((time.Hour * 24) * time.Duration(30))
 		}
+		_, _ = DbMap.Update(&colored)
 		_, _ = DbMap.Update(money)
 		shopLog := ShopLog{
 			DiscordId: message.Author.ID,
