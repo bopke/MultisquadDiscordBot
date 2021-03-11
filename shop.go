@@ -155,7 +155,7 @@ func handleBuyCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 		if err != nil {
 			log.Panicln(err)
 		}
-		if len(shopLogs) >= 5 {
+		if len(shopLogs) >= 3 {
 			_, _ = s.ChannelMessageSendEmbed(message.ChannelID, outOfStockEmbed(message))
 			return
 		}

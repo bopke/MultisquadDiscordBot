@@ -133,17 +133,17 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 		handleReportCommand(s, message)
 		return
 	}
-	if strings.HasPrefix(message.Content, "!sklep") {
+	if strings.HasPrefix(message.Content, "!sklep") && message.ChannelID == "581950409094987838" {
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
 		handleShopCommand(s, message)
 		return
 	}
-	if strings.HasPrefix(message.Content, "!kup") {
+	if strings.HasPrefix(message.Content, "!kup") && message.ChannelID == "581950409094987838" {
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
 		handleBuyCommand(s, message)
 		return
 	}
-	if strings.HasPrefix(message.Content, "!monety") || strings.HasPrefix(message.Content, "!mon") /*&& message.ChannelID == "581950409094987838"*/ {
+	if (strings.HasPrefix(message.Content, "!monety") || strings.HasPrefix(message.Content, "!mon")) && (message.ChannelID == "698639658732486846" || message.ChannelID == "771544460416778250" || message.ChannelID == "581950409094987838") {
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
 		handleMoneyCommand(s, message)
 	}

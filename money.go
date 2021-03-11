@@ -156,6 +156,14 @@ func handleMoneyPrzekazCommand(s *discordgo.Session, message *discordgo.MessageC
 		_, _ = s.ChannelMessageSend(message.ChannelID, "Prawidłowe użycie: !monety wyslij <mention> <ilosc>")
 		return
 	}
+	if amount < 0 {
+		return
+	}
+	if message.Author.ID == message.Mentions[0].ID {
+		//                _,_ = s.ChannelMessageSend(message.ChannelID, "Sam sobie")
+		return
+	}
+
 	sourceUserMoney := getMoneyForUserId(message.Author.ID)
 	if sourceUserMoney.Amount < amount {
 		_, _ = s.ChannelMessageSend(message.ChannelID, "Nie masz tyle :worried:")
@@ -328,6 +336,7 @@ func rankMoneyAdd(roleId string, amount int, after string) {
 	}
 	if len(members) == 1000 {
 		rankMoneyAdd(roleId, amount, members[999].User.ID)
+		return
 	}
 	embed := &discordgo.MessageEmbed{
 		URL:         "",
