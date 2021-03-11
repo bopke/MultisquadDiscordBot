@@ -235,7 +235,7 @@ func handleBuyCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 			return
 		}
 		var roleId string
-		switch args[2] {
+		switch strings.ToLower(args[2]) {
 		case "szary":
 			roleId = "691105469569433632"
 		case "zielony":
