@@ -316,8 +316,12 @@ func handleBuyCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 		if err != nil {
 			if err == sql.ErrNoRows {
 				colored = ColoredUser{
-					DiscordID:      message.Author.ID,
-					ExpirationDate: time.Now().Add(-3000 * time.Hour),
+					DiscordID:          message.Author.ID,
+					Color:              "",
+					Valid:              false,
+					RoleId:             "",
+					ExpirationDate:     time.Now().Add(-3000 * time.Hour),
+					NotifiedExpiration: false,
 				}
 				_ = DbMap.Insert(colored)
 				goto badstuff
