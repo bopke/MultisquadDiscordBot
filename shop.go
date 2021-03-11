@@ -148,6 +148,10 @@ func handleBuyCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 			Price:     500,
 			Date:      time.Now(),
 		}
+		embed := createSimpleEmbed(message)
+		embed.Description = "Zakup potwierdzony.\n"
+		_, _ = s.ChannelMessageSendEmbed(message.ChannelID, embed)
+
 		_ = DbMap.Insert(&shopLog)
 	case "nitro":
 		var shopLogs []ShopLog
@@ -329,6 +333,10 @@ func handleBuyCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 			Price:     15000,
 			Date:      time.Now(),
 		}
+		embed := createSimpleEmbed(message)
+		embed.Description = "Zakup potwierdzony.\n"
+		_, _ = s.ChannelMessageSendEmbed(message.ChannelID, embed)
+
 		_ = DbMap.Insert(&shopLog)
 	default:
 		embed := createSimpleEmbed(message)
