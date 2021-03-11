@@ -127,6 +127,12 @@ func handleBuyCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 			_, _ = s.ChannelMessageSendEmbed(message.ChannelID, embed)
 			return
 		}
+		if strings.ToLower(newNickname) == "young multi" {
+			embed := createSimpleEmbed(message)
+			embed.Description = "To nielegalne :worried:"
+			_, _ = s.ChannelMessageSendEmbed(message.ChannelID, embed)
+			return
+		}
 		if newNickname != newNicknameCleared {
 			embed := createSimpleEmbed(message)
 			embed.Description = "Nieprawidłowy nick. Spróbuj: `" + newNicknameCleared + "`"
