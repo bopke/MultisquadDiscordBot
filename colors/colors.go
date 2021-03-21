@@ -61,8 +61,18 @@ func getColorBoughtNotification(userId string) string {
 }
 
 func GetColorsMentions() (ret []string) {
+	contains := func(str string) bool {
+		for _, elem := range ret {
+			if elem == str {
+				return true
+			}
+		}
+		return false
+	}
 	for _, roleId := range colors {
-		ret = append(ret, "<@&"+roleId+">")
+		if !contains("<@&" + roleId + ">") {
+			ret = append(ret, "<@&"+roleId+">")
+		}
 	}
 	return
 }
