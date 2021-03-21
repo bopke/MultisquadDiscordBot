@@ -6,19 +6,23 @@ import (
 )
 
 var (
-	MysqlString           string
-	DiscordToken          string
-	SteamApiToken         string
-	ReactionId            = "<:ohgod:760211746345451581"
-	ReportsChannelId      = ""
-	VerifiedRolesIds      = []string{}
-	MoneyLogChannelId     = "597216492123324442"
-	ReactionChannelsId    = []string{"597216492123324442"}
+	MysqlString      string
+	DiscordToken     string
+	SteamApiToken    string
+	ReactionId       = "<:lov:582679593060663315"
+	ReportsChannelId = "581927703406444555"
+	VerifiedRolesIds = []string{"610961053949624320",
+		"611162396215738380",
+		"610961378966110248",
+		"582166692831166485",
+		"610962640164093952",
+		"662670498949365771"}
+	MoneyLogChannelId  = "613027719902527501"
+	ReactionChannelsId = []string{"664518622445568060",
+		"588855162077184011"}
 	GuildId               string
-	AnnouncementChannelId = "597216492123324442"
-	PermittedRolesId      = []string{
-		"598140510082826270",
-	}
+	AnnouncementChannelId = "580139853933707265"
+	PermittedRolesId      = []string{}
 )
 
 func Load() error {
