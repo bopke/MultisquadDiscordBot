@@ -1,9 +1,11 @@
 package main
 
 import (
+	"github.com/bopke/MultisquadDiscordBot/config"
+	"github.com/bopke/MultisquadDiscordBot/database"
+	"github.com/bopke/MultisquadDiscordBot/money"
 	"github.com/bwmarrin/discordgo"
 	"log"
-	"math/rand"
 	"strconv"
 	"strings"
 	"sync"
@@ -11,83 +13,12 @@ import (
 )
 
 var messageMoneyCountMutex = sync.Mutex{}
-var lastCountedTime = make(map[string]time.Time)
 
 var moneyClearRequestTime = time.Now()
 var moneyClearRequesterId = ""
 
-func createMoneyForUserId(userId string) *Money {
-	var userMoney Money
-	userMoney.Amount = 0
-	userMoney.UserId = userId
-	err := DbMap.Insert(&userMoney)
-	if err != nil {
-		return nil
-	}
-	return &userMoney
-}
-
-func getMoneyForUserId(userId string) *Money {
-	var userMoney Money
-	err := DbMap.SelectOne(&userMoney, "SELECT * FROM Money WHERE user_id=?", userId)
-	if err != nil {
-		money := createMoneyForUserId(userId)
-		if money == nil {
-			return nil
-		}
-		return money
-	}
-	return &userMoney
-}
-
-func getUserMoneyRankPosition(userId string) (int64, error) {
-	return DbMap.SelectInt("SELECT FIND_IN_SET(amount, (SELECT GROUP_CONCAT( amount ORDER BY amount DESC) FROM Money )) AS rank FROM Money WHERE user_id = ?", userId)
-}
-
-func messageMoneyCountCS(message *discordgo.MessageCreate) (int, int) {
-	messageMoneyCountMutex.Lock()
-	defer messageMoneyCountMutex.Unlock()
-	lastTime, ok := lastCountedTime[message.Author.ID]
-	now := time.Now()
-	if !ok {
-		lastCountedTime[message.Author.ID] = now
-		lastTime = now
-	}
-
-	if lastTime != now && lastTime.Add(time.Second*time.Duration(Config.MessageMoneyInterval)).After(now) {
-		return -1, -1
-	}
-	lastCountedTime[message.Author.ID] = now
-	userMoney := getMoneyForUserId(message.Author.ID)
-	if userMoney == nil {
-		return -1, -1
-	}
-	addedAmount := Config.MessageMoneyMin + rand.Intn(Config.MessageMoneyMax-Config.MessageMoneyMin)
-	userMoney.Amount += addedAmount
-	_, err := DbMap.Update(userMoney)
-	if err != nil {
-		log.Println("messageMoneyCountCS cannot update in database! ", err)
-		return -1, -1
-	}
-	return addedAmount, userMoney.Amount
-}
-
-func handleMessageMoneyCount(s *discordgo.Session, message *discordgo.MessageCreate) {
-	if message.Author.Bot {
-		return
-	}
-	if message.ChannelID == "580117263815016449" || message.ChannelID == "581950409094987838" {
-		return
-	}
-	added, whole := messageMoneyCountCS(message)
-	if added == -1 {
-		return
-	}
-	logMoneyAdd(s, message.Author.ID, "Text channel activity", added, whole)
-}
-
 func handleMoneyZerujCommand(s *discordgo.Session, message *discordgo.MessageCreate, args []string) {
-	if !hasPermission(message.Member, Config.ServerId, discordgo.PermissionAdministrator) {
+	if !hasPermission(message.Member, config.GuildId, discordgo.PermissionAdministrator) {
 		_, _ = s.ChannelMessageSend(message.ChannelID, Locale.NoAdminPermission)
 		return
 	}
@@ -99,7 +30,7 @@ func handleMoneyZerujCommand(s *discordgo.Session, message *discordgo.MessageCre
 	if len(args) == 3 && args[2] == "potwierdz" {
 		if message.Author.ID == moneyClearRequesterId && moneyClearRequestTime.Add(time.Second*time.Duration(20)).After(time.Now()) {
 			_, _ = s.ChannelMessageSend(message.ChannelID, "Zeruję stan monet. To może chwile zająć. Dam znać gdy skończę.")
-			_, err := DbMap.Exec("UPDATE Money SET amount=0")
+			_, err := database.DbMap.Exec("UPDATE Money SET amount=0")
 			if err != nil {
 
 			}
@@ -110,7 +41,7 @@ func handleMoneyZerujCommand(s *discordgo.Session, message *discordgo.MessageCre
 }
 
 func handleMoneyManipulateCommand(s *discordgo.Session, message *discordgo.MessageCreate, args []string) {
-	if !hasPermission(message.Member, Config.ServerId, discordgo.PermissionAdministrator) && !hasRole(message.Member, "Moderator", Config.ServerId) {
+	if !hasPermission(message.Member, config.GuildId, discordgo.PermissionAdministrator) && !hasRole(message.Member, "Moderator", config.GuildId) {
 		_, _ = s.ChannelMessageSend(message.ChannelID, Locale.NoAdminPermission)
 		return
 	}
@@ -124,7 +55,7 @@ func handleMoneyManipulateCommand(s *discordgo.Session, message *discordgo.Messa
 		_, _ = s.ChannelMessageSend(message.ChannelID, "Poprawne użycie: !monety "+args[1]+" <mention> <ilosc>")
 		return
 	}
-	userMoney := getMoneyForUserId(message.Mentions[0].ID)
+	userMoney := money.GetMoneyForUserId(message.Mentions[0].ID)
 	if args[1] == "dodaj" {
 		userMoney.Amount += amount
 		go logMoneyAdd(s, message.Mentions[0].ID, "added by <@"+message.Author.ID+">", amount, userMoney.Amount)
@@ -138,7 +69,7 @@ func handleMoneyManipulateCommand(s *discordgo.Session, message *discordgo.Messa
 
 	messageMoneyCountMutex.Lock()
 	defer messageMoneyCountMutex.Unlock()
-	_, err = DbMap.Update(userMoney)
+	_, err = database.DbMap.Update(userMoney)
 	if err != nil {
 		_, _ = s.ChannelMessageSend(message.ChannelID, Locale.UnexpectedApiError)
 		return
@@ -164,23 +95,23 @@ func handleMoneyPrzekazCommand(s *discordgo.Session, message *discordgo.MessageC
 		return
 	}
 
-	sourceUserMoney := getMoneyForUserId(message.Author.ID)
+	sourceUserMoney := money.GetMoneyForUserId(message.Author.ID)
 	if sourceUserMoney.Amount < amount {
 		_, _ = s.ChannelMessageSend(message.ChannelID, "Nie masz tyle :worried:")
 		return
 	}
-	destinationUserMoney := getMoneyForUserId(message.Mentions[0].ID)
+	destinationUserMoney := money.GetMoneyForUserId(message.Mentions[0].ID)
 
 	messageMoneyCountMutex.Lock()
 	defer messageMoneyCountMutex.Unlock()
 	sourceUserMoney.Amount -= amount
 	destinationUserMoney.Amount += amount
-	_, err = DbMap.Update(sourceUserMoney)
+	_, err = database.DbMap.Update(sourceUserMoney)
 	if err != nil {
 		_, _ = s.ChannelMessageSend(message.ChannelID, Locale.UnexpectedApiError)
 		return
 	}
-	_, err = DbMap.Update(destinationUserMoney)
+	_, err = database.DbMap.Update(destinationUserMoney)
 	if err != nil {
 		_, _ = s.ChannelMessageSend(message.ChannelID, Locale.UnexpectedApiError)
 		return
@@ -212,7 +143,7 @@ func handleMoneyPrzekazCommand(s *discordgo.Session, message *discordgo.MessageC
 }
 
 func handleMoneyCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
-	var userMoney *Money
+	var userMoney *database.Money
 	checkedUser := message.Author
 	args := strings.Split(message.Content, " ")
 	if args[0] != "!mon" && args[0] != "!monety" {
@@ -240,8 +171,8 @@ func handleMoneyCommand(s *discordgo.Session, message *discordgo.MessageCreate) 
 		checkedUser = message.Mentions[0]
 	}
 	log.Println("Sprawdzam pieniadze " + checkedUser.Username + "#" + checkedUser.Discriminator + " (" + checkedUser.ID + ") w bazie")
-	userMoney = getMoneyForUserId(checkedUser.ID)
-	position, err := getUserMoneyRankPosition(checkedUser.ID)
+	userMoney = money.GetMoneyForUserId(checkedUser.ID)
+	position, err := money.GetUserMoneyRankPosition(checkedUser.ID)
 	if err != nil {
 		log.Println(err)
 	}
@@ -271,8 +202,8 @@ func handleMoneyCommand(s *discordgo.Session, message *discordgo.MessageCreate) 
 }
 
 func handleBaltopCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
-	var userMoneys []Money
-	_, err := DbMap.Select(&userMoneys, "SELECT * FROM Money ORDER BY amount DESC LIMIT 10")
+	var userMoneys []database.Money
+	_, err := database.DbMap.Select(&userMoneys, "SELECT * FROM Money ORDER BY amount DESC LIMIT 10")
 	if err != nil {
 		log.Println("handleBaltopCommand unable to select from DB")
 		_, _ = s.ChannelMessageSend(message.ChannelID, Locale.UnexpectedApiError)
@@ -282,7 +213,7 @@ func handleBaltopCommand(s *discordgo.Session, message *discordgo.MessageCreate)
 	for i, money := range userMoneys {
 		top += strconv.Itoa(i+1) + ". <@" + money.UserId + "> - " + strconv.Itoa(money.Amount) + " <a:moneta:613020692346175628>\n"
 	}
-	position, err := getUserMoneyRankPosition(message.Author.ID)
+	position, err := money.GetUserMoneyRankPosition(message.Author.ID)
 	if err != nil {
 		log.Println(err)
 	}
@@ -314,23 +245,23 @@ func logMoneyAdd(s *discordgo.Session, userId, reason string, added, whole int) 
 		Color:       0xffff00,
 		Fields:      nil,
 	}
-	_, err := s.ChannelMessageSendEmbed(Config.MoneyLogChannelId, embed)
+	_, err := s.ChannelMessageSendEmbed(config.MoneyLogChannelId, embed)
 	if err != nil {
 		log.Println("logMoneyAdd unable to send embed! ", err)
 	}
 }
 
 func rankMoneyAdd(roleId string, amount int, after string) {
-	members, err := session.GuildMembers(Config.ServerId, after, 1000)
+	members, err := session.GuildMembers(config.GuildId, after, 1000)
 	if err != nil {
 		log.Println("Error adding money " + err.Error())
 		return
 	}
 	for _, member := range members {
-		if hasRoleId(member, roleId, Config.ServerId) {
-			userMoney := getMoneyForUserId(member.User.ID)
+		if hasRoleId(member, roleId, config.GuildId) {
+			userMoney := money.GetMoneyForUserId(member.User.ID)
 			userMoney.Amount += amount
-			_, _ = DbMap.Update(userMoney)
+			_, _ = database.DbMap.Update(userMoney)
 			go logMoneyAdd(session, member.User.ID, "has <@&"+roleId+"> role", amount, userMoney.Amount)
 		}
 	}
@@ -353,5 +284,5 @@ func rankMoneyAdd(roleId string, amount int, after string) {
 		Author:      nil,
 		Fields:      nil,
 	}
-	_, _ = session.ChannelMessageSendEmbed(Config.AnnouncementChannelId, embed)
+	_, _ = session.ChannelMessageSendEmbed(config.AnnouncementChannelId, embed)
 }

@@ -1,9 +1,5 @@
 {
-  "mysql_login": "username",
-  "mysql_password": "password",
-  "mysql_database": "database",
-  "mysql_host": "localhost",
-  "mysql_port": 3306,
+  "mysql_string": "username:password@tcp(hostname:3306)/databasename?parseTime=true&charset=utf8mb4,utf8",
   "steam_command_name": "!steam",
   "status_command_name": "!status",
   "minecraft_command_name": "!minecraft",

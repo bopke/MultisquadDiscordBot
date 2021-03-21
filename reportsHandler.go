@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/bopke/MultisquadDiscordBot/config"
 	"github.com/bwmarrin/discordgo"
 	"log"
 	"strings"
@@ -212,28 +213,28 @@ func sendFullDMReport(data *ReportDMData) {
 		}
 		embed.Fields[i].Value = info
 	}
-	_, err := session.ChannelMessageSend(Config.ReportsChannelId, "<@&610997643413291008> <@&320577390965424138>")
+	_, err := session.ChannelMessageSend(config.ReportsChannelId, "<@&610997643413291008> <@&320577390965424138>")
 	if err != nil {
 		log.Println("sendFullDMReport unable to send pings! ", err)
 	}
-	_, err = session.ChannelMessageSendEmbed(Config.ReportsChannelId, embed)
+	_, err = session.ChannelMessageSendEmbed(config.ReportsChannelId, embed)
 	if err != nil {
-		_, _ = session.ChannelMessageSend(Config.ReportsChannelId, "Dostałem zgłoszenie, ale było zbyt długie aby wrzucić je w jednym embedzie. Wrzucam tekstowo w oddzielnych wiadomościach.")
-		_, _ = session.ChannelMessageSend(Config.ReportsChannelId, embed.Title+"\n"+embed.Description+"\nAutor:\n"+embed.Author.Name)
+		_, _ = session.ChannelMessageSend(config.ReportsChannelId, "Dostałem zgłoszenie, ale było zbyt długie aby wrzucić je w jednym embedzie. Wrzucam tekstowo w oddzielnych wiadomościach.")
+		_, _ = session.ChannelMessageSend(config.ReportsChannelId, embed.Title+"\n"+embed.Description+"\nAutor:\n"+embed.Author.Name)
 		for i, stageMessage := range data.StageMessages {
-			_, _ = session.ChannelMessageSend(Config.ReportsChannelId, embed.Fields[i].Name)
-			_, _ = session.ChannelMessageSend(Config.ReportsChannelId, stageMessage.Content)
+			_, _ = session.ChannelMessageSend(config.ReportsChannelId, embed.Fields[i].Name)
+			_, _ = session.ChannelMessageSend(config.ReportsChannelId, stageMessage.Content)
 			for i, attachment := range stageMessage.Attachments {
 				if i == 0 {
-					_, _ = session.ChannelMessageSend(Config.ReportsChannelId, "**Załączniki:**")
+					_, _ = session.ChannelMessageSend(config.ReportsChannelId, "**Załączniki:**")
 				}
-				_, _ = session.ChannelMessageSend(Config.ReportsChannelId, attachment.URL)
+				_, _ = session.ChannelMessageSend(config.ReportsChannelId, attachment.URL)
 			}
 		}
 		//		log.Println(err)
 	} else {
 		if len(attachments) != 0 {
-			_, _ = session.ChannelMessageSend(Config.ReportsChannelId, "Wszystkie załączniki:\n"+attachments)
+			_, _ = session.ChannelMessageSend(config.ReportsChannelId, "Wszystkie załączniki:\n"+attachments)
 		}
 	}
 }

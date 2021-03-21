@@ -1,46 +1,16 @@
 package main
 
 import (
+	"github.com/bopke/MultisquadDiscordBot/commands"
+	"github.com/bopke/MultisquadDiscordBot/config"
+	"github.com/bopke/MultisquadDiscordBot/money"
+	"github.com/bopke/MultisquadDiscordBot/nicks"
 	"github.com/bwmarrin/discordgo"
 	"log"
 	"math/rand"
-	"strconv"
 	"strings"
 	"time"
 )
-
-var rateLimits map[string]map[string]time.Time
-
-func InitRateLimits() {
-	rateLimits = map[string]map[string]time.Time{}
-	rateLimits[Config.SteamCommandName] = map[string]time.Time{}
-	rateLimits[Config.StatusCommandName] = map[string]time.Time{}
-	rateLimits[Config.MinecraftCommandName] = map[string]time.Time{}
-}
-
-func tickRatelimitCounter(msg *discordgo.Message, duration int) {
-	for ; duration > 0; duration-- {
-		start := time.Now()
-		_, _ = session.ChannelMessageEdit(msg.ChannelID, msg.ID, strings.Replace(Locale.RateLimitWait, "{SECONDS}", strconv.Itoa(duration), -1))
-		time.Sleep(start.Add(time.Second).Sub(time.Now()))
-	}
-	_ = session.ChannelMessageDelete(msg.ChannelID, msg.ID)
-}
-
-func isTooEarlyToExecute(command string, message *discordgo.MessageCreate) bool {
-
-	if rateLimits[command][message.Author.ID].Add(10 * time.Second).After(time.Now()) {
-		timeDifference := rateLimits[command][message.Author.ID].Add(10 * time.Second).Sub(time.Now())
-		timeDiff := int(timeDifference.Seconds()) + 1
-		msg, err := session.ChannelMessageSend(message.ChannelID, strings.Replace(Locale.RateLimitWait, "{SECONDS}", strconv.Itoa(timeDiff), -1))
-		if err == nil {
-			go tickRatelimitCounter(msg, timeDiff-1)
-		}
-		return true
-	}
-	rateLimits[command][message.Author.ID] = time.Now()
-	return false
-}
 
 func OnDMMessageReactionAdd(s *discordgo.Session, reaction *discordgo.MessageReactionAdd) {
 	channel, err := s.Channel(reaction.ChannelID)
@@ -72,33 +42,23 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 	}
 
 	//jeżeli wiadomość jest na serwerze innym niż nasz oczekiwany to wywalać z tymi komendami.
-	if message.GuildID != Config.ServerId {
+	if message.GuildID != config.GuildId {
 		return
 	}
 
-	go handleMessageMoneyCount(s, message)
-
+	go money.HandleMessageMoneyCount(s, message)
 	// jeżeli wiadomość zaczyna się od naszej komendy to analizujemy dalej
-	if strings.HasPrefix(message.Content, Config.SteamCommandName) {
-		if isTooEarlyToExecute(Config.SteamCommandName, message) {
-			return
-		}
+	if strings.HasPrefix(message.Content, "!steam") {
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
 		handleSteamCommand(s, message)
 		return
 	}
-	if strings.HasPrefix(message.Content, Config.StatusCommandName) {
-		if isTooEarlyToExecute(Config.StatusCommandName, message) {
-			return
-		}
+	if strings.HasPrefix(message.Content, "!status") {
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
 		handleStatusCommand(s, message)
 		return
 	}
-	if strings.HasPrefix(message.Content, Config.MinecraftCommandName) {
-		if isTooEarlyToExecute(Config.MinecraftCommandName, message) {
-			return
-		}
+	if strings.HasPrefix(message.Content, "!minecraft") {
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
 		handleMinecraftCommand(s, message)
 		return
@@ -108,19 +68,9 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 		handleVipsCommand(s, message)
 		return
 	}
-	if strings.HasPrefix(message.Content, Config.VipCommandName) {
-		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
-		handleVipCommand(s, message)
-		return
-	}
 	if strings.HasPrefix(message.Content, "!unvip") {
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
 		handleUnvipCommand(s, message)
-		return
-	}
-	if strings.HasPrefix(message.Content, Config.ColorCommandName) {
-		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
-		handleColorCommand(s, message)
 		return
 	}
 	if strings.HasPrefix(message.Content, "!announce") {
@@ -133,17 +83,7 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 		handleReportCommand(s, message)
 		return
 	}
-	if strings.HasPrefix(message.Content, "!sklep") && message.ChannelID == "581950409094987838" {
-		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
-		handleShopCommand(s, message)
-		return
-	}
-	if strings.HasPrefix(message.Content, "!kup") && message.ChannelID == "581950409094987838" {
-		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
-		handleBuyCommand(s, message)
-		return
-	}
-	if (strings.HasPrefix(message.Content, "!monety") || strings.HasPrefix(message.Content, "!mon")) && (message.ChannelID == "698639658732486846" || message.ChannelID == "771544460416778250" || message.ChannelID == "581950409094987838") {
+	if (strings.HasPrefix(message.Content, "!monety") || strings.HasPrefix(message.Content, "!mon")) && (message.ChannelID == "597216492123324442" || message.ChannelID == "698639658732486846" || message.ChannelID == "771544460416778250" || message.ChannelID == "581950409094987838") {
 		log.Println(message.Author.Username + "#" + message.Author.Discriminator + " wykonał polecenie: " + message.Content)
 		handleMoneyCommand(s, message)
 	}
@@ -152,23 +92,29 @@ func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
 		handleRaidCommand(s, message)
 		return
 	}*/
+	commands.Listener(s, message)
 }
 
 func OnGuildMemberUpdate(s *discordgo.Session, e *discordgo.GuildMemberUpdate) {
-	if !Config.ChangeBotNicknames && e.User.Bot {
+	if e.User.Bot {
 		return
 	}
-	fixNickname(e.Member)
+	nicks.FixNickname(s, e.Member)
 }
 
+const (
+	RulesAgreementEmojiName = "tak"
+	RulesMessageId          = "795633406192648242"
+)
+
 func OnMessageReactionAdd(s *discordgo.Session, reaction *discordgo.MessageReactionAdd) {
-	if reaction.MessageID != Config.RulesMessageId {
+	if reaction.MessageID != RulesMessageId {
 		return
 	}
-	if reaction.Emoji.Name != Config.RulesAgreementEmojiName {
+	if reaction.Emoji.Name != RulesAgreementEmojiName {
 		return
 	}
-	if len(Config.VerifiedRolesIds) == 0 {
+	if len(config.VerifiedRolesIds) == 0 {
 		return
 	}
 	member, err := s.GuildMember(reaction.GuildID, reaction.UserID)
@@ -177,12 +123,12 @@ func OnMessageReactionAdd(s *discordgo.Session, reaction *discordgo.MessageReact
 		return
 	}
 	for _, roleId := range member.Roles {
-		if roleId == Config.VerifiedRolesIds[0] {
+		if roleId == config.VerifiedRolesIds[0] {
 			return
 		}
 	}
 	wasAbleToAddAllRoles := true
-	for _, roleId := range Config.VerifiedRolesIds {
+	for _, roleId := range config.VerifiedRolesIds {
 		err = s.GuildMemberRoleAdd(reaction.GuildID, reaction.UserID, roleId)
 		if err != nil {
 			wasAbleToAddAllRoles = false
@@ -201,7 +147,7 @@ func OnMessageReactionAdd(s *discordgo.Session, reaction *discordgo.MessageReact
 	if !wasAbleToAddAllRoles {
 		content += "\n Nie udało mi się nadać Ci wszystkich ról :worried:"
 	}
-	_, err = s.ChannelMessageSendComplex(Config.AnnouncementChannelId, &discordgo.MessageSend{
+	_, err = s.ChannelMessageSendComplex(config.AnnouncementChannelId, &discordgo.MessageSend{
 		Content: content,
 		Embed:   embed,
 	})
@@ -212,8 +158,8 @@ func OnMessageReactionAdd(s *discordgo.Session, reaction *discordgo.MessageReact
 }
 
 func OnGuildMemberAdd(s *discordgo.Session, e *discordgo.GuildMemberAdd) {
-	if !Config.ChangeBotNicknames && e.User.Bot {
+	if e.User.Bot {
 		return
 	}
-	fixNickname(e.Member)
+	nicks.FixNickname(s, e.Member)
 }

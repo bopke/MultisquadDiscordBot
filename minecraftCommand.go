@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"github.com/bopke/MultisquadDiscordBot/database"
 	"github.com/bwmarrin/discordgo"
 	"log"
 	"strings"
@@ -14,7 +15,7 @@ func handleMinecraftCommand(s *discordgo.Session, message *discordgo.MessageCrea
 		log.Println("Błąd pobierania twórcy wiadomości!\n" + err.Error())
 		return
 	}
-	if !hasRole(member, Config.PermittedRoleName, message.GuildID) {
+	if !hasRole(member, "VIP", message.GuildID) {
 		msg, err := s.ChannelMessageSend(message.ChannelID, Locale.NoPermission)
 		if err == nil {
 			time.Sleep(20 * time.Second)
@@ -51,15 +52,15 @@ func handleMinecraftCommand(s *discordgo.Session, message *discordgo.MessageCrea
 }
 
 func linkUserMinecraftNickname(discordID, minecraftNickname string) State {
-	var linkedUser LinkedUsers
+	var linkedUser database.LinkedUsers
 	// sprawdzamy, czy takie id discorda jest już powiązane, unikamy duplikatów ,aktualizujemy.
-	err := DbMap.SelectOne(&linkedUser, "SELECT * FROM LinkedUsers WHERE discord_id=?", discordID)
+	err := database.DbMap.SelectOne(&linkedUser, "SELECT * FROM LinkedUsers WHERE discord_id=?", discordID)
 	// jeżeli nie ma wpisu z takim discord id...
 	if err == sql.ErrNoRows {
-		linkedUser.DiscordID = discordID
+		linkedUser.DiscordId = discordID
 		linkedUser.MinecraftNickname.String = minecraftNickname
 		linkedUser.MinecraftNickname.Valid = true
-		err = DbMap.Insert(&linkedUser)
+		err = database.DbMap.Insert(&linkedUser)
 		if err != nil {
 			log.Println("Błąd połączenia z bazą danych!\n" + err.Error())
 			return ERROR
@@ -73,7 +74,7 @@ func linkUserMinecraftNickname(discordID, minecraftNickname string) State {
 	//a jeżeli takowy wpis jest
 	linkedUser.MinecraftNickname.String = minecraftNickname
 	linkedUser.MinecraftNickname.Valid = true
-	_, err = DbMap.Update(&linkedUser)
+	_, err = database.DbMap.Update(&linkedUser)
 	if err != nil {
 		log.Println("Błąd połączenia z bazą danych!\n" + err.Error())
 		return ERROR

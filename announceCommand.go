@@ -1,10 +1,11 @@
 package main
 
 import (
+	"github.com/bopke/MultisquadDiscordBot/context"
+	"github.com/bopke/MultisquadDiscordBot/util"
 	"github.com/bwmarrin/discordgo"
 	"log"
 	"strings"
-	"time"
 )
 
 func handleAnnounceCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
@@ -14,12 +15,16 @@ func handleAnnounceCommand(s *discordgo.Session, message *discordgo.MessageCreat
 		log.Println("Błąd pobierania twórcy wiadomości!\n" + err.Error())
 		return
 	}
-	if !hasPermission(member, message.GuildID, discordgo.PermissionAdministrator) {
-		msg, err := s.ChannelMessageSend(message.ChannelID, Locale.NoAdminPermission)
-		if err == nil {
-			time.Sleep(20 * time.Second)
-			_ = s.ChannelMessageDelete(msg.ChannelID, msg.ID)
-		}
+	if !util.HasPermission(&context.Context{
+		Session:   s,
+		Guild:     nil,
+		Member:    member,
+		Message:   message.Message,
+		ChannelId: message.ChannelID,
+		GuildId:   message.GuildID,
+		UserId:    member.User.ID,
+		MessageId: message.ID,
+	}, discordgo.PermissionAdministrator) {
 		return
 	}
 	// dzielimy wiadomość po spacjach dla wygody

@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"github.com/bopke/MultisquadDiscordBot/database"
 	"github.com/bwmarrin/discordgo"
 	"log"
 	"time"
@@ -30,8 +31,8 @@ func handleUnvipCommand(s *discordgo.Session, message *discordgo.MessageCreate) 
 		}
 		return
 	}
-	var linkedUser LinkedUsers
-	err = DbMap.SelectOne(&linkedUser, "SELECT * FROM LinkedUsers WHERE discord_id = ?", message.Mentions[0].ID)
+	var linkedUser database.LinkedUsers
+	err = database.DbMap.SelectOne(&linkedUser, "SELECT * FROM LinkedUsers WHERE discord_id = ?", message.Mentions[0].ID)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("Błąd połączenia z bazą danych!\n" + err.Error())
 		_, _ = s.ChannelMessageSend(message.ChannelID, Locale.DatabaseError)
@@ -48,8 +49,8 @@ func handleUnvipCommand(s *discordgo.Session, message *discordgo.MessageCreate) 
 	linkedUser.Valid = false
 	linkedUser.ExpirationDate = time.Now()
 	linkedUser.NotifiedExpiration = true
-	_, err = DbMap.Update(&linkedUser)
-	role, err := getRoleID(message.GuildID, Config.PermittedRoleName)
+	_, err = database.DbMap.Update(&linkedUser)
+	role, err := getRoleID(message.GuildID, "VIP")
 	err = s.GuildMemberRoleRemove(message.GuildID, message.Mentions[0].ID, role)
 	if err != nil {
 		log.Println("Błąd odbierania rangi " + err.Error())

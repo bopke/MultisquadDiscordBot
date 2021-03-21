@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/bopke/MultisquadDiscordBot/database"
 	"github.com/bwmarrin/discordgo"
 	"log"
 	"strings"
@@ -10,13 +11,13 @@ import (
 )
 
 func handleStatusCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
-	var linkedUser LinkedUsers
+	var linkedUser database.LinkedUsers
 	checkedUser := message.Author
 	if len(message.Mentions) > 0 {
 		checkedUser = message.Mentions[0]
 	}
 	log.Println("Sprawdzam status " + checkedUser.Username + "#" + checkedUser.Discriminator + " (" + checkedUser.ID + ") w bazie")
-	err := DbMap.SelectOne(&linkedUser, "SELECT expiration_date FROM LinkedUsers WHERE discord_id=?", checkedUser.ID)
+	err := database.DbMap.SelectOne(&linkedUser, "SELECT expiration_date FROM LinkedUsers WHERE discord_id=?", checkedUser.ID)
 	if err == sql.ErrNoRows {
 		log.Println("Stwierdzam nieobecność " + checkedUser.Username + "#" + checkedUser.Discriminator + " (" + checkedUser.ID + ")" + " w bazie")
 		if len(message.Mentions) > 0 {

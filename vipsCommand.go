@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/bopke/MultisquadDiscordBot/database"
 	"github.com/bwmarrin/discordgo"
 	"log"
 	"time"
@@ -22,8 +23,8 @@ func handleVipsCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 		}
 		return
 	}
-	var actualVips []LinkedUsers
-	_, err = DbMap.Select(&actualVips, "SELECT discord_id,expiration_date FROM LinkedUsers WHERE expiration_date >= NOW() ORDER BY expiration_date")
+	var actualVips []database.LinkedUsers
+	_, err = database.DbMap.Select(&actualVips, "SELECT discord_id,expiration_date FROM LinkedUsers WHERE expiration_date >= NOW() ORDER BY expiration_date")
 	if err != nil {
 		log.Println("Błąd pobierania aktualnych vipów.", err)
 		return
@@ -31,7 +32,7 @@ func handleVipsCommand(s *discordgo.Session, message *discordgo.MessageCreate) {
 	log.Println("Pobrałem informacje o", len(actualVips), "vipach")
 	content := ""
 	for i, actualVip := range actualVips {
-		content += "<@" + actualVip.DiscordID + "> - " + fmt.Sprintf("%4d-%02d-%02d %02d:%02d\n", actualVip.ExpirationDate.Year(), actualVip.ExpirationDate.Month(), actualVip.ExpirationDate.Day(), actualVip.ExpirationDate.Hour(), actualVip.ExpirationDate.Minute())
+		content += "<@" + actualVip.DiscordId + "> - " + fmt.Sprintf("%4d-%02d-%02d %02d:%02d\n", actualVip.ExpirationDate.Year(), actualVip.ExpirationDate.Month(), actualVip.ExpirationDate.Day(), actualVip.ExpirationDate.Hour(), actualVip.ExpirationDate.Minute())
 		if i > 0 && i%20 == 0 {
 			embed := discordgo.MessageEmbed{
 				Title:       "Aktualne VIPy",

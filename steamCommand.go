@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/bopke/MultisquadDiscordBot/config"
+	"github.com/bopke/MultisquadDiscordBot/database"
 	"github.com/bwmarrin/discordgo"
 	"log"
 	"net/http"
@@ -18,7 +20,7 @@ var NoSuchProfileError = errors.New("no such profile")
 // funkcja wyciągająca za pomocą specjalnego api steamId na podstawie id konta użytkownika. Zwraca również potencjalny błąd.
 func validateSteamId(steamId string) (string, error) {
 	log.Println("Sprawdzam zgodność SID " + steamId)
-	url := fmt.Sprintf("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002?key=%s&steamids=%s", Config.SteamApiToken, steamId)
+	url := fmt.Sprintf("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002?key=%s&steamids=%s", config.SteamApiToken, steamId)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Println("getSteamIdForProfileId http.NewRequest(\"GET\", url, nil) " + err.Error())
@@ -56,7 +58,7 @@ func validateSteamId(steamId string) (string, error) {
 // funkcja wyciągająca za pomocą specjalnego api steamId na podstawie id konta użytkownika. Zwraca również potencjalny błąd.
 func getSteamIdForProfileId(profileId string) (string, error) {
 	log.Println("Sprawdzam zgodność " + profileId)
-	url := fmt.Sprintf("http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001?key=%s&vanityurl=%s", Config.SteamApiToken, profileId)
+	url := fmt.Sprintf("http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001?key=%s&vanityurl=%s", config.SteamApiToken, profileId)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return "", err
@@ -88,15 +90,15 @@ func getSteamIdForProfileId(profileId string) (string, error) {
 
 //funkcja powiązuje id użytkownika discorda z steamid w bazie danych
 func linkUserSteamID(discordID, steamID string) State {
-	var linkedUser LinkedUsers
+	var linkedUser database.LinkedUsers
 	// sprawdzamy, czy takie id discorda jest już powiązane, unikamy duplikatów ,aktualizujemy.
-	err := DbMap.SelectOne(&linkedUser, "SELECT * FROM LinkedUsers WHERE discord_id=?", discordID)
+	err := database.DbMap.SelectOne(&linkedUser, "SELECT * FROM LinkedUsers WHERE discord_id=?", discordID)
 	// jeżeli nie ma wpisu z takim discord id...
 	if err == sql.ErrNoRows {
-		linkedUser.DiscordID = discordID
-		linkedUser.SteamID64.String = steamID
-		linkedUser.SteamID64.Valid = true
-		err = DbMap.Insert(&linkedUser)
+		linkedUser.DiscordId = discordID
+		linkedUser.SteamId64.String = steamID
+		linkedUser.SteamId64.Valid = true
+		err = database.DbMap.Insert(&linkedUser)
 		if err != nil {
 			log.Println("Błąd połączenia z bazą danych!\n" + err.Error())
 			return ERROR
@@ -108,9 +110,9 @@ func linkUserSteamID(discordID, steamID string) State {
 		return ERROR
 	}
 	//a jeżeli takowy wpis jest
-	linkedUser.SteamID64.String = steamID
-	linkedUser.SteamID64.Valid = true
-	_, err = DbMap.Update(&linkedUser)
+	linkedUser.SteamId64.String = steamID
+	linkedUser.SteamId64.Valid = true
+	_, err = database.DbMap.Update(&linkedUser)
 	if err != nil {
 		log.Println("Błąd połączenia z bazą danych!\n" + err.Error())
 		return ERROR
@@ -124,7 +126,7 @@ func handleSteamCommand(s *discordgo.Session, message *discordgo.MessageCreate) 
 		log.Println("Błąd pobierania twórcy wiadomości!\n" + err.Error())
 		return
 	}
-	if !hasRole(member, Config.PermittedRoleName, message.GuildID) {
+	if !hasRole(member, "VIP", message.GuildID) {
 		msg, err := s.ChannelMessageSend(message.ChannelID, Locale.NoPermission)
 		if err == nil {
 			time.Sleep(20 * time.Second)
