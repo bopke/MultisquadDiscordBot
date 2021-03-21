@@ -18,9 +18,9 @@ var lastCountedTime = make(map[string]time.Time)
 
 const (
 	messageMoneyInterval = 90
-	messageMoneyMin      = 5
+	messageMoneyMin      = 1
 	messageMoneyMax      = 10
-	moneyLogChannelId    = "597216492123324442"
+	moneyLogChannelId    = "613027719902527501"
 )
 
 func createMoneyForUserId(userId string) *database.Money {
