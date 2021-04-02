@@ -26,7 +26,7 @@ func OnDMMessageReactionAdd(s *discordgo.Session, reaction *discordgo.MessageRea
 
 // funkcja ta przyjmuje każdą wiadomość która zostanie wysłana na kanałach, które widzi bot i analizuje ją.
 func OnMessageCreate(s *discordgo.Session, message *discordgo.MessageCreate) {
-	log.Println(message.Content)
+	//	log.Println(message.Content)
 	if s.State.User.ID != message.Author.ID && message.Author.Bot {
 		return
 	}
