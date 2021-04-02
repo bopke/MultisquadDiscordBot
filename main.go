@@ -67,18 +67,24 @@ func main() {
 		ctx := &context.Context{
 			Session: session,
 		}
+		log.Println("Starting colors check")
 		err := colors.CheckUserColors(ctx)
 		if err != nil {
 			log.Println("Error while checking users colors", err)
 		}
+		log.Println("Checking colors finished")
+		log.Println("Starting vips check")
 		err = vip.CheckVips(ctx)
 		if err != nil {
 			log.Println("Error while checking users colors", err)
 		}
+		log.Println("Checking vips finished")
+		log.Println("Starting nicks check")
 		err = nicks.CheckNicknames(session)
 		if err != nil {
 			log.Println("Error while checking users nicknames", err)
 		}
+		log.Println("Checking nicks finished")
 	})
 	_ = c.AddFunc("0 0 0 * * *", func() { rankMoneyAdd("579717933736132620", 300, "") })
 	_ = c.AddFunc("0 0 6 * * *", func() { rankMoneyAdd("579717933736132620", 300, "") })
