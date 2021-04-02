@@ -63,29 +63,7 @@ func main() {
 
 	// cron - narzędzie do cyklicznego wykonywania zadania. Co minutę będzie odpalać funkcję checkUsers.
 	c := cron.New()
-	_ = c.AddFunc("0 0 */2 * * *", func() {
-		ctx := &context.Context{
-			Session: session,
-		}
-		log.Println("Starting colors check")
-		err := colors.CheckUserColors(ctx)
-		if err != nil {
-			log.Println("Error while checking users colors", err)
-		}
-		log.Println("Checking colors finished")
-		log.Println("Starting vips check")
-		err = vip.CheckVips(ctx)
-		if err != nil {
-			log.Println("Error while checking users colors", err)
-		}
-		log.Println("Checking vips finished")
-		log.Println("Starting nicks check")
-		err = nicks.CheckNicknames(session)
-		if err != nil {
-			log.Println("Error while checking users nicknames", err)
-		}
-		log.Println("Checking nicks finished")
-	})
+	_ = c.AddFunc("0 0 */2 * * *", userChecks)
 	_ = c.AddFunc("0 0 0 * * *", func() { rankMoneyAdd("579717933736132620", 300, "") })
 	_ = c.AddFunc("0 0 6 * * *", func() { rankMoneyAdd("579717933736132620", 300, "") })
 	_ = c.AddFunc("0 0 12 * * *", func() { rankMoneyAdd("579717933736132620", 300, "") })
@@ -101,7 +79,7 @@ func main() {
 
 	c.Start()
 
-	go inits()
+	go userChecks()
 	log.Println("Started.")
 
 	sc := make(chan os.Signal, 1)
@@ -113,8 +91,26 @@ func main() {
 	}
 }
 
-func inits() {
-	_ = vip.CheckVips(&context.Context{Session: session})
-	_ = colors.CheckUserColors(&context.Context{Session: session})
-	_ = nicks.CheckNicknames(session)
+func userChecks() {
+	ctx := &context.Context{
+		Session: session,
+	}
+	log.Println("Starting colors check")
+	err := colors.CheckUserColors(ctx)
+	if err != nil {
+		log.Println("Error while checking users colors", err)
+	}
+	log.Println("Checking colors finished")
+	log.Println("Starting vips check")
+	err = vip.CheckVips(ctx)
+	if err != nil {
+		log.Println("Error while checking users colors", err)
+	}
+	log.Println("Checking vips finished")
+	log.Println("Starting nicks check")
+	err = nicks.CheckNicknames(session)
+	if err != nil {
+		log.Println("Error while checking users nicknames", err)
+	}
+	log.Println("Checking nicks finished")
 }
