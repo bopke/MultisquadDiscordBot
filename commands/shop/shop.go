@@ -41,11 +41,6 @@ func ShopCommand(ctx *context.Context, args []string) (string, error) {
 			Value:  "Ranga Flexer.\nKup poleceniem `!kup flexer`.",
 			Inline: false,
 		},
-		{
-			Name:   "6. Odznaka sezonowa - 50.000 <a:moneta:613020692346175628>",
-			Value:  "Odznaka sezonowa.\nKup poleceniem `!kup sezon`.",
-			Inline: false,
-		},
 	}
 	_, _ = ctx.Session.ChannelMessageSendEmbed(ctx.ChannelId, embed)
 	return "", nil

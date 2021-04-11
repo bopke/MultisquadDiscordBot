@@ -49,11 +49,11 @@ var items = map[string]itemInfo{
 		ItemHandler: shopItems.ColorHandler,
 		Limit:       -1,
 	},
-	"sezon": {
+	/*	"sezon": {
 		Price:       50000,
 		ItemHandler: shopItems.OdznakaHandler,
 		Limit:       -1,
-	},
+	},*/
 }
 
 var shopMutex = sync.Mutex{}

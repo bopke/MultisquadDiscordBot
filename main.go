@@ -63,19 +63,7 @@ func main() {
 
 	// cron - narzędzie do cyklicznego wykonywania zadania. Co minutę będzie odpalać funkcję checkUsers.
 	c := cron.New()
-	_ = c.AddFunc("0 0 * * * *", func() {
-		ctx := &context.Context{
-			Session: session,
-		}
-		err := colors.CheckUserColors(ctx)
-		if err != nil {
-			log.Println("Error while checking users colors", err)
-		}
-		err = vip.CheckVips(ctx)
-		if err != nil {
-			log.Println("Error while checking users colors", err)
-		}
-	})
+	_ = c.AddFunc("0 0 */2 * * *", userChecks)
 	_ = c.AddFunc("0 0 0 * * *", func() { rankMoneyAdd("579717933736132620", 300, "") })
 	_ = c.AddFunc("0 0 6 * * *", func() { rankMoneyAdd("579717933736132620", 300, "") })
 	_ = c.AddFunc("0 0 12 * * *", func() { rankMoneyAdd("579717933736132620", 300, "") })
@@ -89,12 +77,11 @@ func main() {
 	_ = c.AddFunc("0 0 20 * * *", func() { rankMoneyAdd("658394215470071819", 120, "") })
 	_ = c.AddFunc("0 0 21 * * *", func() { rankMoneyAdd("719226922432725072", 240, "") })
 
-	//	_ = c.AddFunc("0 39 4 * * *", func() { log.Println("witam shalom");rankMoneyAdd("597569142580576257", 100000, "") })
 	c.Start()
 
-	go inits()
+	go userChecks()
 	log.Println("Started.")
-	// ten kanał powoduje utrzymanie działania programu dopóki nie przyjdzie do niego sygnał od systemu operacyjnego, że pora się zwijać
+
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
@@ -104,15 +91,26 @@ func main() {
 	}
 }
 
-func inits() {
-	_ = vip.CheckVips(&context.Context{Session: session})
-	_ = colors.CheckUserColors(&context.Context{Session: session})
-	_ = nicks.CheckNicknames(session)
-}
-
-//funkcja odpalana cyklicznie, sprawdza czy wszyscy w bazie nadal są na serwerze i czy są na nim vipami.
-func checkUsers() {
-	_ = vip.CheckVips(&context.Context{Session: session})
-	_ = colors.CheckUserColors(&context.Context{Session: session})
-	_ = nicks.CheckNicknames(session)
+func userChecks() {
+	ctx := &context.Context{
+		Session: session,
+	}
+	log.Println("Starting colors check")
+	err := colors.CheckUserColors(ctx)
+	if err != nil {
+		log.Println("Error while checking users colors", err)
+	}
+	log.Println("Checking colors finished")
+	log.Println("Starting vips check")
+	err = vip.CheckVips(ctx)
+	if err != nil {
+		log.Println("Error while checking users colors", err)
+	}
+	log.Println("Checking vips finished")
+	log.Println("Starting nicks check")
+	err = nicks.CheckNicknames(session)
+	if err != nil {
+		log.Println("Error while checking users nicknames", err)
+	}
+	log.Println("Checking nicks finished")
 }

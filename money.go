@@ -84,8 +84,12 @@ func handleMoneyPrzekazCommand(s *discordgo.Session, message *discordgo.MessageC
 	}
 	amount, err := strconv.Atoi(args[3])
 	if err != nil {
-		_, _ = s.ChannelMessageSend(message.ChannelID, "Prawidłowe użycie: !monety wyslij <mention> <ilosc>")
-		return
+		if args[3] == "all" {
+			amount = money.GetMoneyForUserId(message.Author.ID).Amount
+		} else {
+			_, _ = s.ChannelMessageSend(message.ChannelID, "Prawidłowe użycie: !monety wyslij <mention> <ilosc>")
+			return
+		}
 	}
 	if amount < 0 {
 		return
