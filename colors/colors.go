@@ -217,15 +217,16 @@ func CheckUserColors(ctx *context.Context) error {
 	}
 
 	userPermittedColorRole := func(userId string) string {
-		for _, coloredUser := range coloredUsers {
-			if coloredUser.DiscordId == userId {
-				if coloredUser.Valid == false {
-					return ""
-				}
-				return coloredUser.RoleId
-			}
+		var coloredUser database.ColoredUser
+		err := database.DbMap.SelectOne(&coloredUser, "SELECT * FROM ColoredUsers WHERE discord_id=?", userId)
+		if err != nil {
+			return ""
 		}
-		return ""
+		if coloredUser.Valid == false {
+			return ""
+		}
+		return coloredUser.RoleId
+
 	}
 	err = transaction.Commit()
 	if err != nil {

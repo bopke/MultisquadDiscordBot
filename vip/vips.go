@@ -147,15 +147,15 @@ func CheckVips(ctx *context.Context) error {
 	}
 
 	shouldUserBeVip := func(userId string) bool {
-		for _, linkedUser := range linkedUsers {
-			if linkedUser.DiscordId == userId {
-				if linkedUser.Valid == false {
-					return false
-				}
-				return true
-			}
+		var linkedUser database.LinkedUsers
+		err := database.DbMap.SelectOne(&linkedUser, "SELECT * FROM LinkedUsers WHERE discord_id=?", userId)
+		if err != nil {
+			return false
 		}
-		return false
+		if linkedUser.Valid == false {
+			return false
+		}
+		return true
 	}
 	err = transaction.Commit()
 	if err != nil {
